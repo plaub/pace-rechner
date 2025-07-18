@@ -74,7 +74,7 @@
 </template>
 
 <script lang="ts">
-import { PropType } from "vue";
+import type { PropType } from "vue";
 import VueTimepicker from "vue3-timepicker";
 import "vue3-timepicker/dist/VueTimepicker.css";
 import DurationPicker from "./DurationPicker.vue";
@@ -222,5 +222,7 @@ export default {
     flex-flow: row;
     align-items: center;
   }
+
+  
 }
 </style>

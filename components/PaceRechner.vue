@@ -14,7 +14,7 @@
       id="presets"
       @change="handlePresetChange"
       v-model="preset"
-      class="w-full bg-white rounded"
+      class="bg-white rounded"
     >
       <option value="">Vorlagen</option>
       <option value="sprint">Sprint</option>
@@ -75,7 +75,7 @@
   </div>
 
   <div class="wrapper">
-    <PaceRechnerSummary 
+    <PaceRechnerSummary
       :swimTimeString="swimTimeString"
       :bikeTimeString="bikeTimeString"
       :runTimeString="runTimeString"
@@ -121,18 +121,18 @@
 </template>
 
 <script setup lang="ts">
-import PaceRechnerTransition from "@/components/PaceRechnerTransition.vue"
-import PaceRechnerForm from "./PaceRechnerForm.vue"
-import PaceRechnerSummary from "./PaceRechnerSummary.vue"
+import PaceRechnerTransition from "@/components/PaceRechnerTransition.vue";
+import PaceRechnerForm from "./PaceRechnerForm.vue";
+import PaceRechnerSummary from "./PaceRechnerSummary.vue";
 import {
   SpeedUnit,
   PaceUnit,
   PaceType,
   DistanceUnit,
-} from "@/types/PaceRechner"
-import { usePaceCalculations } from "~/composables/usePaceCalculations"
+} from "@/types/PaceRechner";
+import { usePaceCalculations } from "~/composables/usePaceCalculations";
 
-const preset = ref("")
+const preset = ref("");
 
 const {
   // Base data
@@ -194,11 +194,11 @@ const {
   // Functions
   onChangeDayTimeStart,
   setPreset,
-} = usePaceCalculations()
+} = usePaceCalculations();
 
 const handlePresetChange = () => {
-  setPreset(preset.value)
-}
+  setPreset(preset.value);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -244,6 +244,21 @@ const handlePresetChange = () => {
           padding-right: 5px;
         }
       }
+
+      input {
+        color: #333333;
+        background-color: #ffffff;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        padding: 8px;
+        font-size: 16px;
+
+        &:focus {
+          outline: none;
+          border-color: #007acc;
+          box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.2);
+        }
+      }
     }
 
     ::v-deep(.row .picker input) {
@@ -277,6 +292,7 @@ const handlePresetChange = () => {
   ::v-deep(.vue__time-picker .vue__time-picker-input) {
     border: 1px solid #333;
     border-radius: 4px;
+    color: #333;
   }
 }
 </style>

@@ -13,10 +13,6 @@
           <td>T1 Zeit:</td>
           <td>{{ t1TimeString }}</td>
         </tr>
-        <tr>
-          <td>Bike Zeit:</td>
-          <td>{{ bikeTimeString }}</td>
-        </tr>
         <tr class="sub-split">
           <td>&nbsp;&nbsp;→ Bike {{ bikeQuarter1Km }}km:</td>
           <td>{{ bike25TimeString }}</td>
@@ -30,12 +26,12 @@
           <td>{{ bike75TimeString }}</td>
         </tr>
         <tr>
-          <td>T2 Zeit:</td>
-          <td>{{ t2TimeString }}</td>
+          <td>Bike Zeit:</td>
+          <td>{{ bikeTimeString }}</td>
         </tr>
         <tr>
-          <td>Run Zeit:</td>
-          <td>{{ runTimeString }}</td>
+          <td>T2 Zeit:</td>
+          <td>{{ t2TimeString }}</td>
         </tr>
         <tr class="sub-split">
           <td>&nbsp;&nbsp;→ Run {{ runQuarter1Km }}km:</td>
@@ -48,6 +44,10 @@
         <tr class="sub-split">
           <td>&nbsp;&nbsp;→ Run {{ runThreeQuarterKm }}km:</td>
           <td>{{ run75TimeString }}</td>
+        </tr>
+        <tr>
+          <td>Run Zeit:</td>
+          <td>{{ runTimeString }}</td>
         </tr>
         <tr class="blank_row">
           <td colspan="2"></td>
@@ -63,10 +63,6 @@
           <td>Nach T1:</td>
           <td>{{ t1CumulativeTimeString }}</td>
         </tr>
-        <tr>
-          <td>Nach Bike:</td>
-          <td>{{ bikeCumulativeTimeString }}</td>
-        </tr>
         <tr class="sub-split">
           <td>&nbsp;&nbsp;→ Nach Bike {{ bikeQuarter1Km }}km:</td>
           <td>{{ bike25CumulativeTimeString }}</td>
@@ -80,12 +76,12 @@
           <td>{{ bike75CumulativeTimeString }}</td>
         </tr>
         <tr>
-          <td>Nach T2:</td>
-          <td>{{ t2CumulativeTimeString }}</td>
+          <td>Nach Bike:</td>
+          <td>{{ bikeCumulativeTimeString }}</td>
         </tr>
         <tr>
-          <td>Gesamt Zeit:</td>
-          <td>{{ totalTimeString }}</td>
+          <td>Nach T2:</td>
+          <td>{{ t2CumulativeTimeString }}</td>
         </tr>
         <tr class="sub-split">
           <td>&nbsp;&nbsp;→ Nach Run {{ runQuarter1Km }}km:</td>
@@ -98,6 +94,10 @@
         <tr class="sub-split">
           <td>&nbsp;&nbsp;→ Nach Run {{ runThreeQuarterKm }}km:</td>
           <td>{{ run75CumulativeTimeString }}</td>
+        </tr>
+        <tr>
+          <td>Gesamt Zeit:</td>
+          <td>{{ totalTimeString }}</td>
         </tr>
         <tr class="blank_row">
           <td colspan="2"></td>
@@ -117,10 +117,6 @@
           <td>Nach T1:</td>
           <td>{{ timeAfterT1String }}</td>
         </tr>
-        <tr>
-          <td>Nach Bike:</td>
-          <td>{{ totalTimeAfterBikeString }}</td>
-        </tr>
         <tr class="sub-split">
           <td>&nbsp;&nbsp;→ Uhrzeit Bike {{ bikeQuarter1Km }}km:</td>
           <td>{{ clockTimeBike25String }}</td>
@@ -134,12 +130,12 @@
           <td>{{ clockTimeBike75String }}</td>
         </tr>
         <tr>
-          <td>Nach T2:</td>
-          <td>{{ timeAfterT2String }}</td>
+          <td>Nach Bike:</td>
+          <td>{{ totalTimeAfterBikeString }}</td>
         </tr>
         <tr>
-          <td>Ziel:</td>
-          <td>{{ dayTimeFinish }}</td>
+          <td>Nach T2:</td>
+          <td>{{ timeAfterT2String }}</td>
         </tr>
         <tr class="sub-split">
           <td>&nbsp;&nbsp;→ Uhrzeit Run {{ runQuarter1Km }}km:</td>
@@ -153,6 +149,10 @@
           <td>&nbsp;&nbsp;→ Uhrzeit Run {{ runThreeQuarterKm }}km:</td>
           <td>{{ clockTimeRun75String }}</td>
         </tr>
+        <tr>
+          <td>Ziel:</td>
+          <td>{{ dayTimeFinish }}</td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -160,49 +160,49 @@
 
 <script setup lang="ts">
 interface Props {
-  swimTimeString: string
-  bikeTimeString: string
-  runTimeString: string
-  t1TimeString: string
-  t2TimeString: string
-  totalTimeString: string
-  swimCumulativeTimeString: string
-  t1CumulativeTimeString: string
-  bikeCumulativeTimeString: string
-  t2CumulativeTimeString: string
-  dayTimeStartString: string
-  totalTimeAfterSwimString: string
-  timeAfterT1String: string
-  totalTimeAfterBikeString: string
-  timeAfterT2String: string
-  dayTimeFinish: string
-  bikeQuarter1Km: number
-  bikeHalfKm: number
-  bikeThreeQuarterKm: number
-  runQuarter1Km: number
-  runHalfKm: number
-  runThreeQuarterKm: number
-  bike25TimeString: string
-  bike50TimeString: string
-  bike75TimeString: string
-  run25TimeString: string
-  run50TimeString: string
-  run75TimeString: string
-  bike25CumulativeTimeString: string
-  bike50CumulativeTimeString: string
-  bike75CumulativeTimeString: string
-  run25CumulativeTimeString: string
-  run50CumulativeTimeString: string
-  run75CumulativeTimeString: string
-  clockTimeBike25String: string
-  clockTimeBike50String: string
-  clockTimeBike75String: string
-  clockTimeRun25String: string
-  clockTimeRun50String: string
-  clockTimeRun75String: string
+  swimTimeString: string;
+  bikeTimeString: string;
+  runTimeString: string;
+  t1TimeString: string;
+  t2TimeString: string;
+  totalTimeString: string;
+  swimCumulativeTimeString: string;
+  t1CumulativeTimeString: string;
+  bikeCumulativeTimeString: string;
+  t2CumulativeTimeString: string;
+  dayTimeStartString: string;
+  totalTimeAfterSwimString: string;
+  timeAfterT1String: string;
+  totalTimeAfterBikeString: string;
+  timeAfterT2String: string;
+  dayTimeFinish: string;
+  bikeQuarter1Km: number;
+  bikeHalfKm: number;
+  bikeThreeQuarterKm: number;
+  runQuarter1Km: number;
+  runHalfKm: number;
+  runThreeQuarterKm: number;
+  bike25TimeString: string;
+  bike50TimeString: string;
+  bike75TimeString: string;
+  run25TimeString: string;
+  run50TimeString: string;
+  run75TimeString: string;
+  bike25CumulativeTimeString: string;
+  bike50CumulativeTimeString: string;
+  bike75CumulativeTimeString: string;
+  run25CumulativeTimeString: string;
+  run50CumulativeTimeString: string;
+  run75CumulativeTimeString: string;
+  clockTimeBike25String: string;
+  clockTimeBike50String: string;
+  clockTimeBike75String: string;
+  clockTimeRun25String: string;
+  clockTimeRun50String: string;
+  clockTimeRun75String: string;
 }
 
-defineProps<Props>()
+defineProps<Props>();
 </script>
 
 <style lang="scss" scoped>
@@ -222,7 +222,7 @@ defineProps<Props>()
       .section-header {
         background-color: #f0f0f0;
         font-weight: bold;
-        
+
         td {
           text-align: center;
           padding: 8px 4px;
@@ -240,7 +240,7 @@ defineProps<Props>()
           font-size: 0.9em;
           color: #666;
           font-style: italic;
-          
+
           &:first-child {
             font-weight: 400;
           }
@@ -249,14 +249,14 @@ defineProps<Props>()
 
       td {
         padding: 4px;
-        
+
         &:first-child {
           font-weight: 500;
-          width: 60%;
+          width: 30%;
         }
-        
+
         &:last-child {
-          text-align: right;
+          text-align: left;
           font-family: monospace;
         }
       }
