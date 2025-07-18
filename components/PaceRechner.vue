@@ -12,7 +12,7 @@
     <select
       name=""
       id="presets"
-      @change="setPreset"
+      @change="handlePresetChange"
       v-model="preset"
       class="w-full bg-white rounded"
     >
@@ -75,227 +75,130 @@
   </div>
 
   <div class="wrapper">
-    <div class="pace-rechner summary">
-      <table>
-        <tbody>
-          <tr>
-            <td>Gesamt Zeit:</td>
-            <td>{{ totalTimeString }}</td>
-          </tr>
-          <tr class="blank_row">
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>Uhrzeit nach Swim:</td>
-            <td>{{ totalTimeAfterSwimString }}</td>
-          </tr>
-          <tr>
-            <td>Uhrzeit nach Bike:</td>
-            <td>{{ totalTimeAfterBikeString }}</td>
-          </tr>
-          <tr>
-            <td>Uhrzeit im Ziel:</td>
-            <td>{{ dayTimeFinish }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <PaceRechnerSummary 
+      :swimTimeString="swimTimeString"
+      :bikeTimeString="bikeTimeString"
+      :runTimeString="runTimeString"
+      :t1TimeString="t1TimeString"
+      :t2TimeString="t2TimeString"
+      :totalTimeString="totalTimeString"
+      :swimCumulativeTimeString="swimCumulativeTimeString"
+      :t1CumulativeTimeString="t1CumulativeTimeString"
+      :bikeCumulativeTimeString="bikeCumulativeTimeString"
+      :t2CumulativeTimeString="t2CumulativeTimeString"
+      :dayTimeStartString="dayTimeStartString"
+      :totalTimeAfterSwimString="totalTimeAfterSwimString"
+      :timeAfterT1String="timeAfterT1String"
+      :totalTimeAfterBikeString="totalTimeAfterBikeString"
+      :timeAfterT2String="timeAfterT2String"
+      :dayTimeFinish="dayTimeFinish"
+      :bikeQuarter1Km="bikeQuarter1Km"
+      :bikeHalfKm="bikeHalfKm"
+      :bikeThreeQuarterKm="bikeThreeQuarterKm"
+      :runQuarter1Km="runQuarter1Km"
+      :runHalfKm="runHalfKm"
+      :runThreeQuarterKm="runThreeQuarterKm"
+      :bike25TimeString="bike25TimeString"
+      :bike50TimeString="bike50TimeString"
+      :bike75TimeString="bike75TimeString"
+      :run25TimeString="run25TimeString"
+      :run50TimeString="run50TimeString"
+      :run75TimeString="run75TimeString"
+      :bike25CumulativeTimeString="bike25CumulativeTimeString"
+      :bike50CumulativeTimeString="bike50CumulativeTimeString"
+      :bike75CumulativeTimeString="bike75CumulativeTimeString"
+      :run25CumulativeTimeString="run25CumulativeTimeString"
+      :run50CumulativeTimeString="run50CumulativeTimeString"
+      :run75CumulativeTimeString="run75CumulativeTimeString"
+      :clockTimeBike25String="clockTimeBike25String"
+      :clockTimeBike50String="clockTimeBike50String"
+      :clockTimeBike75String="clockTimeBike75String"
+      :clockTimeRun25String="clockTimeRun25String"
+      :clockTimeRun50String="clockTimeRun50String"
+      :clockTimeRun75String="clockTimeRun75String"
+    />
   </div>
 </template>
 
-<script lang="ts">
-import PaceRechnerTransition from "@/components/PaceRechnerTransition.vue";
-import { secondsToHHMMSS } from "~~/utils/calculations";
-import PaceRechnerForm from "./PaceRechnerForm.vue";
+<script setup lang="ts">
+import PaceRechnerTransition from "@/components/PaceRechnerTransition.vue"
+import PaceRechnerForm from "./PaceRechnerForm.vue"
+import PaceRechnerSummary from "./PaceRechnerSummary.vue"
 import {
   SpeedUnit,
   PaceUnit,
   PaceType,
   DistanceUnit,
-} from "@/types/PaceRechner";
+} from "@/types/PaceRechner"
+import { usePaceCalculations } from "~/composables/usePaceCalculations"
 
-export default {
-  name: "PaceRechner",
+const preset = ref("")
 
-  components: {
-    PaceRechnerTransition,
-    PaceRechnerForm,
-  },
+const {
+  // Base data
+  dayTimeStart,
+  swimDistance,
+  swimTime,
+  swimPace,
+  bikeDistance,
+  bikeTime,
+  bikeSpeed,
+  runDistance,
+  runTime,
+  runPace,
+  t1Time,
+  t2Time,
 
-  setup() {
-    const preset = ref("");
-    const dayTimeStart = ref(25200);
-    const dayTimeFinish = ref("");
+  // All computed values for summary
+  swimTimeString,
+  bikeTimeString,
+  runTimeString,
+  t1TimeString,
+  t2TimeString,
+  totalTimeString,
+  swimCumulativeTimeString,
+  t1CumulativeTimeString,
+  bikeCumulativeTimeString,
+  t2CumulativeTimeString,
+  dayTimeStartString,
+  totalTimeAfterSwimString,
+  timeAfterT1String,
+  totalTimeAfterBikeString,
+  timeAfterT2String,
+  dayTimeFinish,
+  bikeQuarter1Km,
+  bikeHalfKm,
+  bikeThreeQuarterKm,
+  runQuarter1Km,
+  runHalfKm,
+  runThreeQuarterKm,
+  bike25TimeString,
+  bike50TimeString,
+  bike75TimeString,
+  run25TimeString,
+  run50TimeString,
+  run75TimeString,
+  bike25CumulativeTimeString,
+  bike50CumulativeTimeString,
+  bike75CumulativeTimeString,
+  run25CumulativeTimeString,
+  run50CumulativeTimeString,
+  run75CumulativeTimeString,
+  clockTimeBike25String,
+  clockTimeBike50String,
+  clockTimeBike75String,
+  clockTimeRun25String,
+  clockTimeRun50String,
+  clockTimeRun75String,
 
-    const swimDistance = ref(3800);
-    const swimTime = ref(0);
-    const swimPace = ref(120);
+  // Functions
+  onChangeDayTimeStart,
+  setPreset,
+} = usePaceCalculations()
 
-    const bikeDistance = ref(180);
-    const bikeTime = ref(0);
-    const bikeSpeed = ref(25);
-
-    const runDistance = ref(42195);
-    const runTime = ref(0);
-    const runPace = ref(380);
-
-    const t1Time = ref(300);
-    const t2Time = ref(300);
-
-    const onChangeDayTimeStart = (value: number) => {
-      dayTimeFinish.value = secondsToHHMMSS(
-        dayTimeStart.value + totalTime.value,
-        false
-      );
-    };
-
-    const totalTime = computed(() => {
-      if (swimTime.value && bikeTime.value && runTime.value) {
-        return (
-          swimTime.value +
-          bikeTime.value +
-          runTime.value +
-          t1Time.value +
-          t2Time.value
-        );
-      }
-      return 0;
-    });
-
-    const totalTimeAfterSwim = computed(() => {
-      if (swimTime.value) {
-        return swimTime.value;
-      }
-      return 0;
-    });
-
-    const totalTimeAfterBike = computed(() => {
-      if (swimTime.value && bikeTime.value) {
-        return swimTime.value + bikeTime.value + t1Time.value;
-      }
-      return 0;
-    });
-
-    const totalTimeString = computed(() => {
-      dayTimeFinish.value = secondsToHHMMSS(
-        dayTimeStart.value + totalTime.value,
-        false
-      );
-
-      return secondsToHHMMSS(totalTime.value, false);
-    });
-
-    const totalTimeAfterSwimString = computed(() => {
-      return secondsToHHMMSS(
-        dayTimeStart.value + totalTimeAfterSwim.value,
-        false
-      );
-    });
-
-    const totalTimeAfterBikeString = computed(() => {
-      return secondsToHHMMSS(
-        dayTimeStart.value + totalTimeAfterBike.value,
-        false
-      );
-    });
-
-    const setPreset = () => {
-      switch (preset.value) {
-        case "sprint":
-          swimDistance.value = 750;
-          swimPace.value = 120;
-          swimTime.value = 900;
-
-          bikeDistance.value = 20;
-          bikeSpeed.value = 25;
-          bikeTime.value = 2880;
-
-          runDistance.value = 5000;
-          runPace.value = 300;
-          runTime.value = 1500;
-          break;
-
-        case "olympic":
-          swimDistance.value = 1500;
-          swimPace.value = 120;
-          swimTime.value = 1800;
-
-          bikeDistance.value = 40;
-          bikeSpeed.value = 25;
-          bikeTime.value = 5760;
-
-          runDistance.value = 10000;
-          runPace.value = 300;
-          runTime.value = 3000;
-          break;
-
-        case "md":
-          swimDistance.value = 1900;
-          swimPace.value = 120;
-          swimTime.value = 2280;
-
-          bikeDistance.value = 90;
-          bikeSpeed.value = 25;
-          bikeTime.value = 12960;
-
-          runDistance.value = 21097.5;
-          runPace.value = 380;
-          runTime.value = 8017;
-          break;
-
-        case "ld":
-          swimDistance.value = 3800;
-          swimPace.value = 120;
-          swimTime.value = 4560;
-
-          bikeDistance.value = 180;
-          bikeSpeed.value = 25;
-          bikeTime.value = 25920;
-
-          runDistance.value = 42195;
-          runPace.value = 380;
-          runTime.value = 16034;
-          break;
-
-        default:
-          break;
-      }
-    };
-
-    return {
-      totalTimeString,
-      setPreset,
-      preset,
-      dayTimeStart,
-      onChangeDayTimeStart,
-      dayTimeFinish,
-
-      swimDistance,
-      swimTime,
-      swimPace,
-
-      bikeDistance,
-      bikeTime,
-      bikeSpeed,
-
-      runDistance,
-      runTime,
-      runPace,
-
-      t1Time,
-      t2Time,
-
-      PaceUnit,
-      SpeedUnit,
-      PaceType,
-      DistanceUnit,
-
-      totalTimeAfterSwimString,
-      totalTimeAfterBikeString,
-    };
-  },
-};
+const handlePresetChange = () => {
+  setPreset(preset.value)
+}
 </script>
 
 <style lang="scss" scoped>
@@ -313,23 +216,6 @@ export default {
     border: 4px solid #333;
     border-radius: 28px;
     margin: 8px;
-
-    &.summary {
-      padding: 10px;
-
-      table {
-        margin: 0 auto;
-
-        .blank_row {
-          height: 10px !important; /* overwrites any other rules */
-          background-color: #ffffff;
-        }
-
-        td {
-          padding: 4px;
-        }
-      }
-    }
 
     ::v-deep(.wrapper) {
       display: flex;
