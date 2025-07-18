@@ -3,8 +3,9 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
-    "generate": "nuxt generate --memory-limit=8192",
-    "preview": "nuxt preview"
+    "generate": "nuxt generate --memory-limit=8192 && node update-plugin.js",
+    "preview": "nuxt preview",
+    "update-plugin": "node update-plugin.js"
   },
   "devDependencies": {
     "@nuxt/postcss8": "^1.1.3",
