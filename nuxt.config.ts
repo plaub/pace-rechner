@@ -24,13 +24,6 @@ export default defineNuxtConfig({
     },
     build: {
       chunkSizeWarningLimit: 1000,
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            vendor: ["vue3-timepicker"],
-          },
-        },
-      },
     },
   },
 });
