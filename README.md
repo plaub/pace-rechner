@@ -2,6 +2,12 @@
 
 An interactive pace calculator for triathlon training and competitions. This tool helps athletes calculate times, speeds, and paces for all three disciplines (swimming, cycling, running) and plan their race strategy.
 
+## Screenshot
+
+![Triathlon Pace Calculator Interface](screenshots/pace-calculator-interface.png)
+
+*The calculator shows the three disciplines (Swimming, Cycling, Running) with T1 and T2 transitions, allowing you to calculate times, paces, and speeds for your triathlon planning.*
+
 ## Features
 
 - 🏊‍♂️ **Swimming**: Pace calculation in min/100m
