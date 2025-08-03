@@ -3,56 +3,6 @@
     <table>
       <tbody>
         <tr class="section-header">
-          <td colspan="2"><strong>Einzelzeiten</strong></td>
-        </tr>
-        <tr>
-          <td>Swim Zeit:</td>
-          <td>{{ swimTimeString }}</td>
-        </tr>
-        <tr>
-          <td>T1 Zeit:</td>
-          <td>{{ t1TimeString }}</td>
-        </tr>
-        <tr class="sub-split">
-          <td>&nbsp;&nbsp;→ Bike {{ bikeQuarter1Km }}km:</td>
-          <td>{{ bike25TimeString }}</td>
-        </tr>
-        <tr class="sub-split">
-          <td>&nbsp;&nbsp;→ Bike {{ bikeHalfKm }}km:</td>
-          <td>{{ bike50TimeString }}</td>
-        </tr>
-        <tr class="sub-split">
-          <td>&nbsp;&nbsp;→ Bike {{ bikeThreeQuarterKm }}km:</td>
-          <td>{{ bike75TimeString }}</td>
-        </tr>
-        <tr>
-          <td>Bike Zeit:</td>
-          <td>{{ bikeTimeString }}</td>
-        </tr>
-        <tr>
-          <td>T2 Zeit:</td>
-          <td>{{ t2TimeString }}</td>
-        </tr>
-        <tr class="sub-split">
-          <td>&nbsp;&nbsp;→ Run {{ runQuarter1Km }}km:</td>
-          <td>{{ run25TimeString }}</td>
-        </tr>
-        <tr class="sub-split">
-          <td>&nbsp;&nbsp;→ Run {{ runHalfKm }}km:</td>
-          <td>{{ run50TimeString }}</td>
-        </tr>
-        <tr class="sub-split">
-          <td>&nbsp;&nbsp;→ Run {{ runThreeQuarterKm }}km:</td>
-          <td>{{ run75TimeString }}</td>
-        </tr>
-        <tr>
-          <td>Run Zeit:</td>
-          <td>{{ runTimeString }}</td>
-        </tr>
-        <tr class="blank_row">
-          <td colspan="2"></td>
-        </tr>
-        <tr class="section-header">
           <td colspan="2"><strong>Kumulierte Zeiten</strong></td>
         </tr>
         <tr>
@@ -102,6 +52,58 @@
         <tr class="blank_row">
           <td colspan="2"></td>
         </tr>
+
+        <tr class="section-header">
+          <td colspan="2"><strong>Einzelzeiten</strong></td>
+        </tr>
+        <tr>
+          <td>Swim Zeit:</td>
+          <td>{{ swimTimeString }}</td>
+        </tr>
+        <tr>
+          <td>T1 Zeit:</td>
+          <td>{{ t1TimeString }}</td>
+        </tr>
+        <tr class="sub-split">
+          <td>&nbsp;&nbsp;→ Bike {{ bikeQuarter1Km }}km:</td>
+          <td>{{ bike25TimeString }}</td>
+        </tr>
+        <tr class="sub-split">
+          <td>&nbsp;&nbsp;→ Bike {{ bikeHalfKm }}km:</td>
+          <td>{{ bike50TimeString }}</td>
+        </tr>
+        <tr class="sub-split">
+          <td>&nbsp;&nbsp;→ Bike {{ bikeThreeQuarterKm }}km:</td>
+          <td>{{ bike75TimeString }}</td>
+        </tr>
+        <tr>
+          <td>Bike Zeit:</td>
+          <td>{{ bikeTimeString }}</td>
+        </tr>
+        <tr>
+          <td>T2 Zeit:</td>
+          <td>{{ t2TimeString }}</td>
+        </tr>
+        <tr class="sub-split">
+          <td>&nbsp;&nbsp;→ Run {{ runQuarter1Km }}km:</td>
+          <td>{{ run25TimeString }}</td>
+        </tr>
+        <tr class="sub-split">
+          <td>&nbsp;&nbsp;→ Run {{ runHalfKm }}km:</td>
+          <td>{{ run50TimeString }}</td>
+        </tr>
+        <tr class="sub-split">
+          <td>&nbsp;&nbsp;→ Run {{ runThreeQuarterKm }}km:</td>
+          <td>{{ run75TimeString }}</td>
+        </tr>
+        <tr>
+          <td>Run Zeit:</td>
+          <td>{{ runTimeString }}</td>
+        </tr>
+        <tr class="blank_row">
+          <td colspan="2"></td>
+        </tr>
+
         <tr class="section-header">
           <td colspan="2"><strong>Uhrzeiten</strong></td>
         </tr>

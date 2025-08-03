@@ -13,11 +13,20 @@
 //Register scripts to use
 function func_load_pace_rechner_scripts()
 {
-    $version = '1.0.19';
-                    wp_register_script('pace-rechner_app', plugin_dir_url(__FILE__) . 'dist/_nuxt/CkFt6ZjZ.js');
-    wp_register_script('pace-rechner_chunk_1', plugin_dir_url(__FILE__) . 'dist/_nuxt/CpJE_tmi.js');
-    wp_register_script('pace-rechner_chunk_2', plugin_dir_url(__FILE__) . 'dist/_nuxt/D0HMUMBc.js');
-    wp_register_script('pace-rechner_chunk_3', plugin_dir_url(__FILE__) . 'dist/_nuxt/D76a8IIU.js');
+    $version = '1.0.30';
+    // Register in dependency order - base chunk first
+                                wp_register_script('pace-rechner_script_0', plugin_dir_url(__FILE__) . 'dist/_nuxt/txLwXk5y.js', array(), $version, true);
+    
+    // Add module type for ES6 imports
+    add_filter('script_loader_tag', 'add_module_to_pace_rechner_scripts', 10, 3);
+}
+
+// Function to add type="module" to pace-rechner scripts
+function add_module_to_pace_rechner_scripts($tag, $handle, $src) {
+    if (strpos($handle, 'pace-rechner_') === 0) {
+        $tag = str_replace('<script ', '<script type="module" defer ', $tag);
+    }
+    return $tag;
 }
 //Tell WordPress to register the scripts 
 add_action('wp_enqueue_scripts', 'func_load_pace_rechner_scripts');
@@ -25,18 +34,12 @@ add_action('wp_enqueue_scripts', 'func_load_pace_rechner_scripts');
 //Return string for shortcode
 function func_wp_pace_rechner()
 {
-    $version = '1.0.19';
-    //Add Vue.js
+    $version = '1.0.30';
     
-    
-    wp_enqueue_script('pace-rechner_app');
-    wp_enqueue_script('pace-rechner_chunk_1');
-    wp_enqueue_script('pace-rechner_chunk_2');
-    wp_enqueue_script('pace-rechner_chunk_3');
-    //Add my code to it
-    // wp_enqueue_script('vue_vendors');
+    // Enqueue the single script that was generated
+    wp_enqueue_script('pace-rechner_script_0');
 
-    wp_enqueue_style('pace-rechner', plugin_dir_url(__FILE__) . 'dist/_nuxt/entry.DHgv64U8.css', null);
+    wp_enqueue_style('pace-rechner', plugin_dir_url(__FILE__) . 'dist/_nuxt/entry.ggozEPIJ.css', null, $version);
 
     //Build String
     $str = '<div id="__nuxt"><div><!--[--><div class="toolbar" data-v-b3e245e5><div data-v-b3e245e5><label data-v-b3e245e5> Um wieviel Uhr startest du? </label><div data-v-b3e245e5><span class="vue__time-picker" style="width:80px;" append-to-body><input type="text" class="vue__time-picker-input is-empty" style="width:80px;" placeholder="HH:mm:ss" tabindex="0" autocomplete="off"><!--v-if--><!--v-if--><!--v-if--><div class="dropdown drop-down" tabindex="-1" style="width:80px;display:none;"><div class="select-list" style="width:80px;" tabindex="-1"><!-- Common Keyboard Support: less event listeners --><!--[--><!--[--><ul class="hours"><li class="hint">HH</li><!--[--><!--]--></ul><!--v-if--><!--v-if--><!--v-if--><!--]--><!--[--><!--v-if--><ul class="minutes"><li class="hint">mm</li><!--[--><!--]--></ul><!--v-if--><!--v-if--><!--]--><!--]--><!-- / Common Keyboard Support --><!--

@@ -32,39 +32,66 @@ function extractBodyContent(htmlFilePath) {
   return bodyContent;
 }
 
-// Ensure the plugin dist directory exists
-// (This will be handled in the cleanup section below)
+// Function to extract script tags from HTML
+function extractScriptTags(htmlFilePath) {
+  const htmlContent = fs.readFileSync(htmlFilePath, "utf8");
 
-// Function to find the main entry JS file (usually the largest one)
-function findMainJsFile(directory) {
-  const files = fs.readdirSync(directory);
-  const jsFiles = files.filter(
-    (file) => file.endsWith(".js") && !file.includes("error")
+  // Find all script tags that reference _nuxt files
+  const scriptMatches = htmlContent.match(
+    /<script[^>]*src="[^"]*\/_nuxt\/[^"]*"[^>]*><\/script>/g
   );
 
-  if (jsFiles.length === 0) return null;
+  if (!scriptMatches) {
+    console.warn("No _nuxt script tags found in HTML");
+    return [];
+  }
 
-  // Find the largest JS file (likely the main entry)
-  let largestFile = jsFiles[0];
-  let largestSize = fs.statSync(path.join(directory, largestFile)).size;
+  return scriptMatches
+    .map((script) => {
+      // Extract the filename from the src attribute
+      const srcMatch = script.match(/src="[^"]*\/_nuxt\/([^"]+)"/);
+      const typeMatch = script.match(/type="([^"]+)"/);
 
-  for (const file of jsFiles) {
-    const size = fs.statSync(path.join(directory, file)).size;
-    if (size > largestSize) {
-      largestSize = size;
-      largestFile = file;
+      if (!srcMatch) return null;
+
+      return {
+        filename: srcMatch[1],
+        isModule: typeMatch && typeMatch[1] === "module",
+        originalTag: script,
+      };
+    })
+    .filter(Boolean);
+}
+
+// Function to copy entire _nuxt directory
+function copyNuxtDirectory(sourcePath, destPath) {
+  // Remove existing directory if it exists
+  if (fs.existsSync(destPath)) {
+    fs.rmSync(destPath, { recursive: true, force: true });
+  }
+
+  // Create destination directory
+  fs.mkdirSync(destPath, { recursive: true });
+
+  // Copy all files recursively
+  function copyRecursive(src, dest) {
+    const items = fs.readdirSync(src);
+
+    for (const item of items) {
+      const srcPath = path.join(src, item);
+      const destPath = path.join(dest, item);
+      const stat = fs.statSync(srcPath);
+
+      if (stat.isDirectory()) {
+        fs.mkdirSync(destPath, { recursive: true });
+        copyRecursive(srcPath, destPath);
+      } else {
+        fs.copyFileSync(srcPath, destPath);
+      }
     }
   }
 
-  return largestFile;
-}
-
-// Function to find all JS files (not just the main one)
-function findAllJsFiles(directory) {
-  const files = fs.readdirSync(directory);
-  return files.filter(
-    (file) => file.endsWith(".js") && !file.includes("error")
-  );
+  copyRecursive(sourcePath, destPath);
 }
 
 // Function to find CSS file
@@ -76,11 +103,10 @@ function findMainCssFile(directory) {
 }
 
 // Find the generated files
-const jsFile = findMainJsFile(distPath);
-const allJsFiles = findAllJsFiles(distPath);
 const cssFile = findMainCssFile(distPath);
+const scriptTags = extractScriptTags(indexPath);
 
-if (!jsFile || !cssFile || allJsFiles.length === 0) {
+if (!cssFile || scriptTags.length === 0) {
   console.error("Could not find generated files in dist/_nuxt/");
   console.log("Available files:", fs.readdirSync(distPath));
   process.exit(1);
@@ -96,37 +122,15 @@ try {
   process.exit(1);
 }
 
-console.log(`Found main JS file: ${jsFile}`);
-console.log(`Found all JS files: ${allJsFiles.join(", ")}`);
 console.log(`Found CSS file: ${cssFile}`);
+console.log(
+  `Found script tags: ${scriptTags.map((s) => s.filename).join(", ")}`
+);
 
-// Copy files to plugin directory
-const jsSourcePath = path.join(distPath, jsFile);
-const cssSourcePath = path.join(distPath, cssFile);
-const jsDestPath = path.join(pluginDistPath, jsFile);
-const cssDestPath = path.join(pluginDistPath, cssFile);
-
-// Clean up old files in plugin dist directory
-if (fs.existsSync(pluginDistPath)) {
-  const existingFiles = fs.readdirSync(pluginDistPath);
-  existingFiles.forEach((file) => {
-    fs.unlinkSync(path.join(pluginDistPath, file));
-  });
-} else {
-  fs.mkdirSync(pluginDistPath, { recursive: true });
-}
-
-// Copy CSS file
-fs.copyFileSync(cssSourcePath, cssDestPath);
-console.log(`Copied ${cssFile} to plugin directory`);
-
-// Copy all JS files
-allJsFiles.forEach((jsFileName) => {
-  const sourcePath = path.join(distPath, jsFileName);
-  const destPath = path.join(pluginDistPath, jsFileName);
-  fs.copyFileSync(sourcePath, destPath);
-  console.log(`Copied ${jsFileName} to plugin directory`);
-});
+// Copy entire _nuxt directory to plugin
+console.log("Copying entire _nuxt directory...");
+copyNuxtDirectory(distPath, pluginDistPath);
+console.log("Successfully copied _nuxt directory");
 
 // Read the current plugin file
 let pluginContent = fs.readFileSync(pluginPath, "utf8");
@@ -147,20 +151,49 @@ if (versionMatch) {
   console.log(`Updated version to: ${newVersion}`);
 }
 
-// Generate script registration for all JS files
-const scriptRegistrations = allJsFiles
-  .map((file, index) => {
-    const handle =
-      index === 0 ? "pace-rechner_app" : `pace-rechner_chunk_${index}`;
-    return `    wp_register_script('${handle}', plugin_dir_url(__FILE__) . 'dist/_nuxt/${file}');`;
+// Generate script registration for all JS files based on HTML script tags
+const scriptRegistrations = scriptTags
+  .map((script, index) => {
+    const handle = `pace-rechner_script_${index}`;
+    const moduleType = script.isModule
+      ? ", array(), $version, true"
+      : ", array(), $version, true";
+    return `    wp_register_script('${handle}', plugin_dir_url(__FILE__) . 'dist/_nuxt/${script.filename}'${moduleType});`;
   })
   .join("\n");
 
-// Generate script enqueuing for all JS files
-const scriptEnqueues = allJsFiles
-  .map((file, index) => {
-    const handle =
-      index === 0 ? "pace-rechner_app" : `pace-rechner_chunk_${index}`;
+// Add the filter function for ES6 modules
+const moduleFilterFunction = `
+
+// Function to add type="module" to pace-rechner scripts that need it
+function add_module_to_pace_rechner_scripts($tag, $handle, $src) {
+    // List of scripts that should be modules (based on original HTML)
+    $module_scripts = array(${scriptTags
+      .map((script, index) =>
+        script.isModule ? `'pace-rechner_script_${index}'` : null
+      )
+      .filter(Boolean)
+      .join(", ")});
+    
+    if (in_array($handle, $module_scripts)) {
+        $tag = str_replace('<script ', '<script type="module" defer ', $tag);
+    } else if (strpos($handle, 'pace-rechner_script_') === 0) {
+        $tag = str_replace('<script ', '<script defer ', $tag);
+    }
+    return $tag;
+}`;
+
+const scriptRegistrationsWithFilter =
+  scriptRegistrations +
+  `
+    
+    // Add module type for ES6 imports
+    add_filter('script_loader_tag', 'add_module_to_pace_rechner_scripts', 10, 3);`;
+
+// Generate script enqueuing for all JS files (in correct order from HTML)
+const scriptEnqueues = scriptTags
+  .map((script, index) => {
+    const handle = `pace-rechner_script_${index}`;
     return `    wp_enqueue_script('${handle}');`;
   })
   .join("\n");
@@ -171,12 +204,24 @@ const funcLoadRegex =
 if (pluginContent.match(funcLoadRegex)) {
   pluginContent = pluginContent.replace(
     funcLoadRegex,
-    `$1${scriptRegistrations}\n$3`
+    `$1${scriptRegistrationsWithFilter}\n$3`
   );
 } else {
   console.warn(
     "Could not find func_load_pace_rechner_scripts function to update"
   );
+}
+
+// Add the module filter function after the main function if it doesn't exist
+if (!pluginContent.includes("add_module_to_pace_rechner_scripts")) {
+  const insertAfterRegex =
+    /(add_action\('wp_enqueue_scripts', 'func_load_pace_rechner_scripts'\);)/;
+  if (pluginContent.match(insertAfterRegex)) {
+    pluginContent = pluginContent.replace(
+      insertAfterRegex,
+      `$1${moduleFilterFunction}`
+    );
+  }
 }
 
 // Update the shortcode function to enqueue all scripts
@@ -193,8 +238,14 @@ if (pluginContent.match(scriptEnqueueRegex)) {
 
 // Update CSS reference
 pluginContent = pluginContent.replace(
+  /wp_enqueue_style\('pace-rechner', plugin_dir_url\(__FILE__\) \. 'dist\/_nuxt\/[^']+', null, \$version\);/,
+  `wp_enqueue_style('pace-rechner', plugin_dir_url(__FILE__) . 'dist/_nuxt/${cssFile}', null, $version);`
+);
+
+// Also update older format without version parameter
+pluginContent = pluginContent.replace(
   /wp_enqueue_style\('pace-rechner', plugin_dir_url\(__FILE__\) \. 'dist\/_nuxt\/[^']+', null\);/,
-  `wp_enqueue_style('pace-rechner', plugin_dir_url(__FILE__) . 'dist/_nuxt/${cssFile}', null);`
+  `wp_enqueue_style('pace-rechner', plugin_dir_url(__FILE__) . 'dist/_nuxt/${cssFile}', null, $version);`
 );
 
 // Update the HTML content in the $str variable
@@ -227,11 +278,13 @@ if (pluginContent.match(strRegex)) {
 fs.writeFileSync(pluginPath, pluginContent);
 
 console.log("WordPress plugin updated successfully!");
-console.log(`Updated all JS file references: ${allJsFiles.join(", ")}`);
-console.log(`Updated CSS reference to: ${cssFile}`);
-console.log(`Copied ${allJsFiles.length} JS files to plugin directory`);
 console.log(
-  `Generated script registration and enqueuing for ${allJsFiles.length} JS files`
+  `Updated script references: ${scriptTags.map((s) => s.filename).join(", ")}`
+);
+console.log(`Updated CSS reference to: ${cssFile}`);
+console.log(`Copied entire _nuxt directory with ${scriptTags.length} JS files`);
+console.log(
+  `Generated script registration and enqueuing for ${scriptTags.length} JS files in correct order`
 );
 console.log(
   "Updated HTML content from generated build (including inline scripts)"
