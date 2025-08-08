@@ -171,9 +171,16 @@ if (versionMatch) {
   const patch = parseInt(versionMatch[3]) + 1;
   const newVersion = `${major}.${minor}.${patch}`;
 
+  // Update the $version variables in the code
   pluginContent = pluginContent.replace(
     /\$version = '\d+\.\d+\.\d+';/g,
     `$version = '${newVersion}';`
+  );
+
+  // Update the plugin header version comment
+  pluginContent = pluginContent.replace(
+    /(\* Version: )\d+\.\d+\.\d+/,
+    `$1${newVersion}`
   );
 
   console.log(`Updated version to: ${newVersion}`);

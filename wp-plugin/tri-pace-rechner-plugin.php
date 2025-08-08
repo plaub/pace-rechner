@@ -4,7 +4,7 @@
  * Plugin Name: Triathlon Pace Rechner
  * Plugin URI: https://www.pierrelaub.de
  * Description: Display pace rechner using shortcode [pace-rechner]
- * Version: 1.0.19
+ * Version: 1.0.36
  * Text Domain: triathlon-pace-rechner
  * Author: Pierre Laub
  * Author URI: https://www.pierrelaub.de
@@ -13,9 +13,9 @@
 //Register scripts to use
 function func_load_pace_rechner_scripts()
 {
-    $version = '1.0.35';
+    $version = '1.0.36';
     // Register in dependency order - base chunk first
-    wp_register_script('pace-rechner_script_0', plugin_dir_url(__FILE__) . 'dist/_nuxt/txLwXk5y.js', array(), $version, true);
+        wp_register_script('pace-rechner_script_0', plugin_dir_url(__FILE__) . 'dist/_nuxt/txLwXk5y.js', array(), $version, true);
     
     // Add module type for ES6 imports
     add_filter('script_loader_tag', 'add_module_to_pace_rechner_scripts', 10, 3);
@@ -34,9 +34,10 @@ add_action('wp_enqueue_scripts', 'func_load_pace_rechner_scripts');
 //Return string for shortcode
 function func_wp_pace_rechner()
 {
-    $version = '1.0.35';
+    $version = '1.0.36';
     
     // Enqueue the single script that was generated
+    
     wp_enqueue_script('pace-rechner_script_0');
     wp_enqueue_style('pace-rechner', plugin_dir_url(__FILE__) . 'dist/_nuxt/entry.ggozEPIJ.css', null, $version);
 
