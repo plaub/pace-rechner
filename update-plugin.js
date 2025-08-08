@@ -23,8 +23,36 @@ function extractBodyContent(htmlFilePath) {
 
   let bodyContent = bodyMatch[1];
 
-  // Remove teleports div but keep the scripts - we only want to remove empty teleports
-  bodyContent = bodyContent.replace(/<div id="teleports"><\/div>/g, "");
+  // For SPA mode, we need to create a basic structure since the content is loaded via JS
+  if (
+    bodyContent.includes('<div id="__nuxt"></div>') &&
+    !bodyContent.includes("data-v-")
+  ) {
+    console.log(
+      "Detected SPA mode - using Vue app structure with configuration"
+    );
+    // For SPA, we need the mount point plus the Nuxt configuration
+    const nuxtConfigMatch = htmlContent.match(
+      /<script>window\.__NUXT__[\s\S]*?<\/script>/
+    );
+    let configScript = "";
+    if (nuxtConfigMatch) {
+      configScript = nuxtConfigMatch[0];
+      // Fix the buildAssetsDir path for WordPress
+      configScript = configScript.replace(
+        /"buildAssetsDir":"[^"]*"/,
+        '"buildAssetsDir":"' +
+          "' . plugin_dir_url(__FILE__) . 'dist/_nuxt/" +
+          '"'
+      );
+    }
+
+    bodyContent =
+      '<div id="__nuxt"></div>' + (configScript ? configScript : "");
+  } else {
+    // Remove teleports div but keep the scripts - we only want to remove empty teleports
+    bodyContent = bodyContent.replace(/<div id="teleports"><\/div>/g, "");
+  }
 
   // Clean up extra whitespace but preserve the structure
   bodyContent = bodyContent.trim();
@@ -226,14 +254,38 @@ if (!pluginContent.includes("add_module_to_pace_rechner_scripts")) {
 
 // Update the shortcode function to enqueue all scripts
 const scriptEnqueueRegex =
-  /(\/\/Add Vue\.js\s*)([\s\S]*?)(\/\/Add my code to it)/;
+  /(\/\/ Enqueue the single script that was generated\s*)([\s\S]*?)(wp_enqueue_style)/;
 if (pluginContent.match(scriptEnqueueRegex)) {
   pluginContent = pluginContent.replace(
     scriptEnqueueRegex,
     `$1\n${scriptEnqueues}\n    $3`
   );
+  console.log("Successfully updated script enqueue section");
 } else {
-  console.warn("Could not find script enqueue section to update");
+  // Alternative pattern
+  const altPattern = /(\/\/Add Vue\.js\s*)([\s\S]*?)(wp_enqueue_style)/;
+  if (pluginContent.match(altPattern)) {
+    pluginContent = pluginContent.replace(
+      altPattern,
+      `$1\n${scriptEnqueues}\n    $3`
+    );
+    console.log(
+      "Successfully updated script enqueue section (alternative pattern)"
+    );
+  } else {
+    console.warn("Could not find script enqueue section to update");
+    console.log("Looking for enqueue patterns...");
+    const enqueueIndex = pluginContent.indexOf("wp_enqueue_script");
+    if (enqueueIndex !== -1) {
+      console.log("Found wp_enqueue_script at position:", enqueueIndex);
+      const contextStart = Math.max(0, enqueueIndex - 100);
+      const contextEnd = Math.min(pluginContent.length, enqueueIndex + 200);
+      console.log(
+        "Context:",
+        pluginContent.substring(contextStart, contextEnd)
+      );
+    }
+  }
 }
 
 // Update CSS reference
@@ -258,19 +310,34 @@ const correctedHtml = escapedHtml.replace(
   "' . plugin_dir_url(__FILE__) . 'dist/_nuxt/"
 );
 
-// Find and replace the entire $str assignment - it's all on one very long line
-const strRegex = /(\$str = ')([^']*)(';\s*\/\/Return to display)/;
-if (pluginContent.match(strRegex)) {
-  pluginContent = pluginContent.replace(strRegex, `$1${correctedHtml}$3`);
-  console.log("Successfully updated HTML content");
+// Find and replace the $str assignment - handle multiline strings
+const strRegexMultiline = /(\$str = ')([^']*)(';\s*\/\/Return to display)/s;
+if (pluginContent.match(strRegexMultiline)) {
+  pluginContent = pluginContent.replace(
+    strRegexMultiline,
+    `$1${correctedHtml}$3`
+  );
+  console.log("Successfully updated HTML content (multiline)");
 } else {
-  // Try a simpler approach - find the string between the assignment and the semicolon
-  const simpleRegex = /(\$str = ')([^']*)(';)/;
-  if (pluginContent.match(simpleRegex)) {
-    pluginContent = pluginContent.replace(simpleRegex, `$1${correctedHtml}$3`);
-    console.log("Successfully updated HTML content (fallback method)");
+  // Try to find the start and end of the string assignment more flexibly
+  const strStartRegex = /(\$str = ')(.*?)(?=';[\s\S]*?\/\/Return to display)/s;
+  if (pluginContent.match(strStartRegex)) {
+    pluginContent = pluginContent.replace(strStartRegex, `$1${correctedHtml}`);
+    console.log("Successfully updated HTML content (flexible method)");
   } else {
     console.warn("Could not find $str variable to update HTML content");
+    console.log("Searching for $str pattern...");
+    const strIndex = pluginContent.indexOf("$str = ");
+    if (strIndex !== -1) {
+      console.log("Found $str at position:", strIndex);
+      // Show some context around the $str assignment
+      const contextStart = Math.max(0, strIndex - 50);
+      const contextEnd = Math.min(pluginContent.length, strIndex + 200);
+      console.log(
+        "Context:",
+        pluginContent.substring(contextStart, contextEnd)
+      );
+    }
   }
 }
 
