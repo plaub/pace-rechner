@@ -9,6 +9,7 @@
           :modelValue="time"
           @update:modelValue="onChangeTime"
           lazy
+          backgroundColor="#6b7280"
         />
       </div>
     </div>

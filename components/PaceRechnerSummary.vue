@@ -64,6 +64,17 @@
           </tr>
         </template>
 
+        <!-- For single sports, also show total time -->
+        <template v-if="currentSportPreset">
+          <tr>
+            <td>Gesamt Zeit:</td>
+            <td>{{ getSingleSportTotalTime() }}</td>
+          </tr>
+          <tr class="blank_row">
+            <td colspan="2"></td>
+          </tr>
+        </template>
+
         <tr class="section-header">
           <td colspan="2"><strong>Einzelzeiten</strong></td>
         </tr>
@@ -115,6 +126,21 @@
           <td>{{ getThirdSportTimeLabel() }}:</td>
           <td>{{ runTimeString }}</td>
         </tr>
+
+        <!-- New single sports -->
+        <tr v-if="showRowData">
+          <td>Rudern Zeit:</td>
+          <td>{{ rowTimeString }}</td>
+        </tr>
+        <tr v-if="showHikeData">
+          <td>Wandern Zeit:</td>
+          <td>{{ hikeTimeString }}</td>
+        </tr>
+        <tr v-if="showWalkData">
+          <td>Gehen Zeit:</td>
+          <td>{{ walkTimeString }}</td>
+        </tr>
+
         <tr class="blank_row">
           <td colspan="2"></td>
         </tr>
@@ -174,9 +200,15 @@
           </td>
           <td>{{ clockTimeRun75String }}</td>
         </tr>
-        <tr>
+        <tr v-if="!currentSportPreset">
           <td>Ziel:</td>
           <td>{{ dayTimeFinish }}</td>
+        </tr>
+
+        <!-- For single sports, show simple start/finish -->
+        <tr v-if="currentSportPreset">
+          <td>Ziel ({{ getSingleSportName() }}):</td>
+          <td>{{ getSingleSportFinishTime() }}</td>
         </tr>
       </tbody>
     </table>
@@ -191,6 +223,9 @@ interface Props {
   swimTimeString: string;
   bikeTimeString: string;
   runTimeString: string;
+  rowTimeString?: string;
+  hikeTimeString?: string;
+  walkTimeString?: string;
   t1TimeString: string;
   t2TimeString: string;
   totalTimeString: string;
@@ -256,6 +291,21 @@ const showRunData = computed(() => {
   return currentSportPreset.value.type === "run";
 });
 
+const showRowData = computed(() => {
+  if (!currentSportPreset.value) return false; // Don't show for triathlon presets
+  return currentSportPreset.value.type === "row";
+});
+
+const showHikeData = computed(() => {
+  if (!currentSportPreset.value) return false; // Don't show for triathlon presets
+  return currentSportPreset.value.type === "hike";
+});
+
+const showWalkData = computed(() => {
+  if (!currentSportPreset.value) return false; // Don't show for triathlon presets
+  return currentSportPreset.value.type === "walk";
+});
+
 const showTransitionData = computed(() => {
   return !currentSportPreset.value; // Hide transitions for single sports
 });
@@ -279,6 +329,105 @@ const getThirdSportLabel = () => {
 
 const getThirdSportTimeLabel = () => {
   return props.preset === "duathlon" ? "Run 2 Zeit" : "Run Zeit";
+};
+
+const getSingleSportTotalTime = () => {
+  if (!currentSportPreset.value) return props.totalTimeString;
+
+  switch (currentSportPreset.value.type) {
+    case "swim":
+      return props.swimTimeString;
+    case "bike":
+      return props.bikeTimeString;
+    case "run":
+      return props.runTimeString;
+    case "row":
+      return props.rowTimeString || "00:00:00";
+    case "hike":
+      return props.hikeTimeString || "00:00:00";
+    case "walk":
+      return props.walkTimeString || "00:00:00";
+    default:
+      return props.totalTimeString;
+  }
+};
+
+const getSingleSportName = () => {
+  if (!currentSportPreset.value) return "";
+
+  switch (currentSportPreset.value.type) {
+    case "swim":
+      return "Schwimmen";
+    case "bike":
+      return "Radfahren";
+    case "run":
+      return "Laufen";
+    case "row":
+      return "Rudern";
+    case "hike":
+      return "Wandern";
+    case "walk":
+      return "Gehen";
+    default:
+      return "";
+  }
+};
+
+const getSingleSportFinishTime = () => {
+  if (!currentSportPreset.value) return props.dayTimeFinish;
+
+  // Parse start time (HH:MM:SS)
+  const startTimeParts = props.dayTimeStartString.split(":");
+  const startHours = parseInt(startTimeParts[0]);
+  const startMinutes = parseInt(startTimeParts[1]);
+  const startSeconds = parseInt(startTimeParts[2] || "0");
+  const startTotalSeconds =
+    startHours * 3600 + startMinutes * 60 + startSeconds;
+
+  // Get sport duration in seconds
+  let sportTimeString = "";
+  switch (currentSportPreset.value.type) {
+    case "swim":
+      sportTimeString = props.swimTimeString;
+      break;
+    case "bike":
+      sportTimeString = props.bikeTimeString;
+      break;
+    case "run":
+      sportTimeString = props.runTimeString;
+      break;
+    case "row":
+      sportTimeString = props.rowTimeString || "00:00:00";
+      break;
+    case "hike":
+      sportTimeString = props.hikeTimeString || "00:00:00";
+      break;
+    case "walk":
+      sportTimeString = props.walkTimeString || "00:00:00";
+      break;
+    default:
+      return props.dayTimeFinish;
+  }
+
+  // Parse sport time (HH:MM:SS)
+  const sportTimeParts = sportTimeString.split(":");
+  const sportHours = parseInt(sportTimeParts[0]);
+  const sportMinutes = parseInt(sportTimeParts[1]);
+  const sportSeconds = parseInt(sportTimeParts[2] || "0");
+  const sportTotalSeconds =
+    sportHours * 3600 + sportMinutes * 60 + sportSeconds;
+
+  // Calculate finish time
+  const finishTotalSeconds = startTotalSeconds + sportTotalSeconds;
+  const finishHours = Math.floor(finishTotalSeconds / 3600);
+  const finishMinutes = Math.floor((finishTotalSeconds % 3600) / 60);
+  const finishSecondsRemainder = finishTotalSeconds % 60;
+
+  // Format as HH:MM:SS
+  const pad = (num: number) => num.toString().padStart(2, "0");
+  return `${pad(finishHours)}:${pad(finishMinutes)}:${pad(
+    finishSecondsRemainder
+  )}`;
 };
 </script>
 

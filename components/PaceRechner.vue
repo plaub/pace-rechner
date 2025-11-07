@@ -6,6 +6,7 @@
         v-model="dayTimeStart"
         @update:modelValue="onChangeDayTimeStart"
         uKey="daytimeStart"
+        backgroundColor="#6b7280"
       />
     </div>
 
@@ -65,6 +66,42 @@
           <option
             v-for="sportPreset in singleSportPresets.filter(
               (p) => p.type === 'run'
+            )"
+            :key="sportPreset.value"
+            :value="sportPreset.value"
+          >
+            {{ sportPreset.label }}
+          </option>
+        </optgroup>
+
+        <optgroup label="🚣 Rudern">
+          <option
+            v-for="sportPreset in singleSportPresets.filter(
+              (p) => p.type === 'row'
+            )"
+            :key="sportPreset.value"
+            :value="sportPreset.value"
+          >
+            {{ sportPreset.label }}
+          </option>
+        </optgroup>
+
+        <optgroup label="🥾 Wandern">
+          <option
+            v-for="sportPreset in singleSportPresets.filter(
+              (p) => p.type === 'hike'
+            )"
+            :key="sportPreset.value"
+            :value="sportPreset.value"
+          >
+            {{ sportPreset.label }}
+          </option>
+        </optgroup>
+
+        <optgroup label="🚶 Gehen">
+          <option
+            v-for="sportPreset in singleSportPresets.filter(
+              (p) => p.type === 'walk'
             )"
             :key="sportPreset.value"
             :value="sportPreset.value"
@@ -149,6 +186,51 @@
         :distanceUnit="DistanceUnit.Run"
       />
     </div>
+
+    <div v-if="showRowForm" class="pace-rechner">
+      <pace-rechner-form
+        :key="`row-${componentKey}`"
+        v-model:distance="rowDistance"
+        v-model:time="rowTime"
+        v-model:speed="rowSpeed"
+        :backgroundColor="'#0984e3'"
+        color="#ffffff"
+        title="Rudern"
+        :speedUnit="SpeedUnit.Bike"
+        :paceType="PaceType.Speed"
+        :distanceUnit="DistanceUnit.Run"
+      />
+    </div>
+
+    <div v-if="showHikeForm" class="pace-rechner">
+      <pace-rechner-form
+        :key="`hike-${componentKey}`"
+        v-model:distance="hikeDistance"
+        v-model:time="hikeTime"
+        v-model:pace="hikePace"
+        :backgroundColor="'#6c5ce7'"
+        color="#ffffff"
+        title="Wandern"
+        :paceUnit="PaceUnit.Run"
+        :paceType="PaceType.Pace"
+        :distanceUnit="DistanceUnit.Run"
+      />
+    </div>
+
+    <div v-if="showWalkForm" class="pace-rechner">
+      <pace-rechner-form
+        :key="`walk-${componentKey}`"
+        v-model:distance="walkDistance"
+        v-model:time="walkTime"
+        v-model:pace="walkPace"
+        :backgroundColor="'#00b894'"
+        color="#ffffff"
+        title="Gehen"
+        :paceUnit="PaceUnit.Run"
+        :paceType="PaceType.Pace"
+        :distanceUnit="DistanceUnit.Run"
+      />
+    </div>
   </div>
 
   <div class="wrapper">
@@ -156,6 +238,9 @@
       :swimTimeString="swimTimeString"
       :bikeTimeString="bikeTimeString"
       :runTimeString="runTimeString"
+      :rowTimeString="rowTimeString"
+      :hikeTimeString="hikeTimeString"
+      :walkTimeString="walkTimeString"
       :t1TimeString="t1TimeString"
       :t2TimeString="t2TimeString"
       :totalTimeString="totalTimeString"
@@ -291,6 +376,21 @@ const showRunForm = computed(() => {
   return currentSportPreset.value.type === "run";
 });
 
+const showRowForm = computed(() => {
+  if (!currentSportPreset.value) return false; // Don't show for triathlon presets
+  return currentSportPreset.value.type === "row";
+});
+
+const showHikeForm = computed(() => {
+  if (!currentSportPreset.value) return false; // Don't show for triathlon presets
+  return currentSportPreset.value.type === "hike";
+});
+
+const showWalkForm = computed(() => {
+  if (!currentSportPreset.value) return false; // Don't show for triathlon presets
+  return currentSportPreset.value.type === "walk";
+});
+
 const showTransitions = computed(() => {
   return !currentSportPreset.value; // Hide transitions for single sports
 });
@@ -307,6 +407,15 @@ const {
   runDistance,
   runTime,
   runPace,
+  rowDistance,
+  rowTime,
+  rowSpeed,
+  hikeDistance,
+  hikeTime,
+  hikePace,
+  walkDistance,
+  walkTime,
+  walkPace,
   t1Time,
   t2Time,
 
@@ -314,6 +423,9 @@ const {
   swimTimeString,
   bikeTimeString,
   runTimeString,
+  rowTimeString,
+  hikeTimeString,
+  walkTimeString,
   t1TimeString,
   t2TimeString,
   totalTime,
@@ -381,6 +493,19 @@ const handlePresetChange = () => {
       runTime.value = 0;
       runPace.value = selectedSportPreset.runPace || 300;
 
+      // Set new sport values
+      rowDistance.value = selectedSportPreset.rowDistance || 0;
+      rowTime.value = 0;
+      rowSpeed.value = selectedSportPreset.rowSpeed || 12;
+
+      hikeDistance.value = selectedSportPreset.hikeDistance || 0;
+      hikeTime.value = 0;
+      hikePace.value = selectedSportPreset.hikePace || 480;
+
+      walkDistance.value = selectedSportPreset.walkDistance || 0;
+      walkTime.value = 0;
+      walkPace.value = selectedSportPreset.walkPace || 420;
+
       // Reset transition times for single sports
       t1Time.value = 0;
       t2Time.value = 0;
@@ -416,6 +541,38 @@ const handlePresetChange = () => {
             selectedSportPreset.runPace
         );
       }
+      if (
+        selectedSportPreset.type === "row" &&
+        selectedSportPreset.rowDistance > 0 &&
+        selectedSportPreset.rowSpeed
+      ) {
+        rowTime.value = Math.round(
+          (selectedSportPreset.rowDistance /
+            1000.0 /
+            selectedSportPreset.rowSpeed) *
+            3600
+        );
+      }
+      if (
+        selectedSportPreset.type === "hike" &&
+        selectedSportPreset.hikeDistance > 0 &&
+        selectedSportPreset.hikePace
+      ) {
+        hikeTime.value = Math.round(
+          (selectedSportPreset.hikeDistance / 1000.0) *
+            selectedSportPreset.hikePace
+        );
+      }
+      if (
+        selectedSportPreset.type === "walk" &&
+        selectedSportPreset.walkDistance > 0 &&
+        selectedSportPreset.walkPace
+      ) {
+        walkTime.value = Math.round(
+          (selectedSportPreset.walkDistance / 1000.0) *
+            selectedSportPreset.walkPace
+        );
+      }
     }
   }
 };
@@ -441,6 +598,19 @@ const clearLoadedHistory = () => {
   runDistance.value = 5000;
   runTime.value = 0;
   runPace.value = 300;
+
+  // Reset new sports to default values
+  rowDistance.value = 2000;
+  rowTime.value = 0;
+  rowSpeed.value = 12;
+
+  hikeDistance.value = 10000;
+  hikeTime.value = 0;
+  hikePace.value = 480;
+
+  walkDistance.value = 5000;
+  walkTime.value = 0;
+  walkPace.value = 420;
 
   t1Time.value = 300;
   t2Time.value = 300;

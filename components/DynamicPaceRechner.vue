@@ -69,6 +69,7 @@
         <DurationPicker
           :total-seconds="calculations.transitionTimes.value[index] || 90"
           @update:total-seconds="(val: number) => calculations.updateTransitionTime(index, val)"
+          backgroundColor="#6b7280"
         />
       </div>
     </div>

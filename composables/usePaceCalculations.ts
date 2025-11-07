@@ -22,6 +22,19 @@ export function usePaceCalculations() {
   const runTime = ref(0);
   const runPace = ref(380);
 
+  // New sports
+  const rowDistance = ref(2000);
+  const rowTime = ref(0);
+  const rowSpeed = ref(12);
+
+  const hikeDistance = ref(10000);
+  const hikeTime = ref(0);
+  const hikePace = ref(480);
+
+  const walkDistance = ref(5000);
+  const walkTime = ref(0);
+  const walkPace = ref(420);
+
   const t1Time = ref(300);
   const t2Time = ref(300);
 
@@ -64,6 +77,18 @@ export function usePaceCalculations() {
 
   const runTimeString = computed(() => {
     return secondsToHHMMSS(runTime.value, false);
+  });
+
+  const rowTimeString = computed(() => {
+    return secondsToHHMMSS(rowTime.value, false);
+  });
+
+  const hikeTimeString = computed(() => {
+    return secondsToHHMMSS(hikeTime.value, false);
+  });
+
+  const walkTimeString = computed(() => {
+    return secondsToHHMMSS(walkTime.value, false);
   });
 
   const t1TimeString = computed(() => {
@@ -352,6 +377,15 @@ export function usePaceCalculations() {
     runDistance,
     runTime,
     runPace,
+    rowDistance,
+    rowTime,
+    rowSpeed,
+    hikeDistance,
+    hikeTime,
+    hikePace,
+    walkDistance,
+    walkTime,
+    walkPace,
     t1Time,
     t2Time,
 
@@ -359,6 +393,9 @@ export function usePaceCalculations() {
     swimTimeString,
     bikeTimeString,
     runTimeString,
+    rowTimeString,
+    hikeTimeString,
+    walkTimeString,
     t1TimeString,
     t2TimeString,
     totalTimeString,

@@ -32,6 +32,7 @@
           :modelValue="time"
           @update:modelValue="onChangeTime"
           uKey="runTime"
+          :backgroundColor="backgroundColor"
         />
       </div>
     </div>
@@ -49,6 +50,7 @@
           :modelValue="pace"
           @update:modelValue="onChangePace"
           uKey="runPace"
+          :backgroundColor="backgroundColor"
         />
       </div>
     </div>
