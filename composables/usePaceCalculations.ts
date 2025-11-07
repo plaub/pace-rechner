@@ -1,7 +1,11 @@
 import { computed, ref, type Ref } from "vue";
 import { secondsToHHMMSS } from "~/utils/calculations";
+import { usePresets } from "~/composables/usePresets";
 
 export function usePaceCalculations() {
+  // Initialize presets composable
+  const { applyTriathlonPreset } = usePresets();
+
   // Base reactive data
   const dayTimeStart = ref(25200);
   const dayTimeFinish = ref("");
@@ -320,66 +324,19 @@ export function usePaceCalculations() {
 
   // Preset function
   const setPreset = (preset: string) => {
-    switch (preset) {
-      case "sprint":
-        swimDistance.value = 750;
-        swimPace.value = 120;
-        swimTime.value = 900;
-
-        bikeDistance.value = 20;
-        bikeSpeed.value = 25;
-        bikeTime.value = 2880;
-
-        runDistance.value = 5000;
-        runPace.value = 300;
-        runTime.value = 1500;
-        break;
-
-      case "olympic":
-        swimDistance.value = 1500;
-        swimPace.value = 120;
-        swimTime.value = 1800;
-
-        bikeDistance.value = 40;
-        bikeSpeed.value = 25;
-        bikeTime.value = 5760;
-
-        runDistance.value = 10000;
-        runPace.value = 300;
-        runTime.value = 3000;
-        break;
-
-      case "md":
-        swimDistance.value = 1900;
-        swimPace.value = 120;
-        swimTime.value = 2280;
-
-        bikeDistance.value = 90;
-        bikeSpeed.value = 25;
-        bikeTime.value = 12960;
-
-        runDistance.value = 21097.5;
-        runPace.value = 380;
-        runTime.value = 8017;
-        break;
-
-      case "ld":
-        swimDistance.value = 3800;
-        swimPace.value = 120;
-        swimTime.value = 4560;
-
-        bikeDistance.value = 180;
-        bikeSpeed.value = 25;
-        bikeTime.value = 25920;
-
-        runDistance.value = 42195;
-        runPace.value = 380;
-        runTime.value = 16034;
-        break;
-
-      default:
-        break;
-    }
+    applyTriathlonPreset(preset, {
+      swimDistance,
+      swimPace,
+      swimTime,
+      bikeDistance,
+      bikeSpeed,
+      bikeTime,
+      runDistance,
+      runPace,
+      runTime,
+      t1Time,
+      t2Time,
+    });
   };
 
   return {
@@ -454,6 +411,9 @@ export function usePaceCalculations() {
     clockTimeRun25String,
     clockTimeRun50String,
     clockTimeRun75String,
+
+    // Base computed values
+    totalTime,
 
     // Functions
     onChangeDayTimeStart,

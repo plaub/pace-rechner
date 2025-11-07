@@ -1,3 +1,78 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* WordPress Theme Override für Pace Calculator Tabellen */
+.pace-rechner.summary table.pace-calculator-table,
+#__nuxt .pace-rechner.summary table.pace-calculator-table,
+body .pace-rechner.summary table.pace-calculator-table {
+  margin: 0 auto !important;
+  width: 100% !important;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: inherit !important;
+}
+
+.pace-rechner.summary table.pace-calculator-table tbody,
+#__nuxt .pace-rechner.summary table.pace-calculator-table tbody,
+body .pace-rechner.summary table.pace-calculator-table tbody {
+  border: none !important;
+  background: transparent !important;
+}
+
+.pace-rechner.summary table.pace-calculator-table tr,
+#__nuxt .pace-rechner.summary table.pace-calculator-table tr,
+body .pace-rechner.summary table.pace-calculator-table tr {
+  border: none !important;
+  background: transparent !important;
+}
+
+.pace-rechner.summary table.pace-calculator-table tr:nth-child(odd),
+.pace-rechner.summary table.pace-calculator-table tr:nth-child(even),
+#__nuxt .pace-rechner.summary table.pace-calculator-table tr:nth-child(odd),
+#__nuxt .pace-rechner.summary table.pace-calculator-table tr:nth-child(even),
+body .pace-rechner.summary table.pace-calculator-table tr:nth-child(odd),
+body .pace-rechner.summary table.pace-calculator-table tr:nth-child(even) {
+  background: transparent !important;
+}
+
+.pace-rechner.summary table.pace-calculator-table tr:hover,
+#__nuxt .pace-rechner.summary table.pace-calculator-table tr:hover,
+body .pace-rechner.summary table.pace-calculator-table tr:hover {
+  background: transparent !important;
+}
+
+.pace-rechner.summary table.pace-calculator-table td,
+#__nuxt .pace-rechner.summary table.pace-calculator-table td,
+body .pace-rechner.summary table.pace-calculator-table td {
+  padding: 4px !important;
+  border: none !important;
+  vertical-align: top !important;
+  background: transparent !important;
+  text-align: inherit !important;
+}
+
+.pace-rechner.summary table.pace-calculator-table .section-header td,
+#__nuxt .pace-rechner.summary table.pace-calculator-table .section-header td,
+body .pace-rechner.summary table.pace-calculator-table .section-header td {
+  text-align: center !important;
+  padding: 8px 4px !important;
+  border-bottom: 2px solid #333 !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  background-color: #f0f0f0 !important;
+  font-weight: bold !important;
+}
+
+.pace-rechner.summary table.pace-calculator-table .blank_row td,
+#__nuxt .pace-rechner.summary table.pace-calculator-table .blank_row td,
+body .pace-rechner.summary table.pace-calculator-table .blank_row td {
+  background-color: #ffffff !important;
+  border: none !important;
+  padding: 0 !important;
+  height: 10px !important;
+}

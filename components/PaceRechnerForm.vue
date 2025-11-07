@@ -75,8 +75,7 @@
 
 <script lang="ts">
 import type { PropType } from "vue";
-import VueTimepicker from "vue3-timepicker";
-import "vue3-timepicker/dist/VueTimepicker.css";
+import { toRefs, onMounted } from "vue";
 import DurationPicker from "./DurationPicker.vue";
 import { DistanceUnit, PaceType, PaceUnit } from "@/types/PaceRechner";
 
@@ -84,7 +83,6 @@ export default {
   name: "PaceRechnerForm",
 
   components: {
-    VueTimepicker,
     DurationPicker,
   },
 
@@ -138,11 +136,13 @@ export default {
       if (paceType.value === PaceType.Pace) {
         onChangePace(pace.value);
       } else {
-        onChangeSpeed({ target: { value: speed.value } });
+        // Create a mock event for initial calculation
+        const mockEvent = { target: { value: speed.value.toString() } } as any;
+        onChangeSpeed(mockEvent);
       }
     });
 
-    const onChangePace = (newPace) => {
+    const onChangePace = (newPace: number) => {
       if (paceUnit.value === PaceUnit.Run) {
         emit("update:time", Math.round((newPace * distance.value) / 1000));
       } else {
@@ -152,7 +152,7 @@ export default {
       emit("update:pace", newPace);
     };
 
-    const onChangeTime = (newTime) => {
+    const onChangeTime = (newTime: number) => {
       if (paceType.value === PaceType.Pace) {
         if (paceUnit.value === PaceUnit.Run) {
           emit("update:pace", Math.round((newTime * 1000) / distance.value));
@@ -168,8 +168,9 @@ export default {
       emit("update:time", newTime);
     };
 
-    const onChangeDistance = (newDistance) => {
-      const distance = newDistance.target.value.toString().replace(/,/g, ".");
+    const onChangeDistance = (event: Event) => {
+      const target = event.target as HTMLInputElement;
+      const distance = target.value.toString().replace(/,/g, ".");
 
       const d = parseFloat(distance);
       if (isNaN(d) || d < 10) {
@@ -190,8 +191,9 @@ export default {
       emit("update:distance", d);
     };
 
-    const onChangeSpeed = (newSpeed) => {
-      const p = parseFloat(newSpeed.target.value);
+    const onChangeSpeed = (event: Event) => {
+      const target = event.target as HTMLInputElement;
+      const p = parseFloat(target.value);
       if (isNaN(p)) {
         return;
       }
@@ -222,7 +224,5 @@ export default {
     flex-flow: row;
     align-items: center;
   }
-
-  
 }
 </style>

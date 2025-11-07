@@ -1,51 +1,53 @@
-# Triathlon Pace Calculator 🏊‍♂️🚴‍♂️🏃‍♂️
+# Pace Rechner Pro
 
-An interactive pace calculator for triathlon training and competitions. This tool helps athletes calculate times, speeds, and paces for all three disciplines (swimming, cycling, running) and plan their race strategy.
+Ein fortschrittlicher Multi-Sport Pace-Kalkulator mit Triathlon-Unterstützung, entwickelt mit Nuxt 3 und Vue 3.
 
 ## Screenshot
 
 ![Triathlon Pace Calculator Interface](screenshots/pace-calculator-interface.png)
 
-*The calculator shows the three disciplines (Swimming, Cycling, Running) with T1 and T2 transitions, allowing you to calculate times, paces, and speeds for your triathlon planning.*
+_The calculator shows the three disciplines (Swimming, Cycling, Running) with T1 and T2 transitions, allowing you to calculate times, paces, and speeds for your triathlon planning._
 
-## Features
+## ✨ Features
 
-- 🏊‍♂️ **Swimming**: Pace calculation in min/100m
-- 🚴‍♂️ **Cycling**: Speed calculation in km/h
-- 🏃‍♂️ **Running**: Pace calculation in min/km
-- ⏱️ **Transition Times**: Include T1 and T2 transitions
-- 📋 **Presets**: Predefined distances for Sprint, Olympic, Half Distance, and Full Distance
-- 🕐 **Start Time Planning**: Calculate expected finish time based on start time
-- 📊 **Live Calculation**: Automatic updates of all values when inputs change
-- 🔌 **WordPress Plugin**: Easy integration into WordPress websites
+### Multi-Sport Support
 
-## Supported Distances
+- **Schwimmen** - Pace in min/100m
+- **Radfahren** - Geschwindigkeit in km/h
+- **Laufen** - Pace in min/km
+- **Rudern** - Geschwindigkeit in km/h
+- **Wandern** - Pace in min/km
+- **Gehen** - Pace in min/km
 
-### Presets
+### Triathlon & Duathlon Templates
 
-- **Sprint**: 750m Swimming, 20km Cycling, 5km Running
-- **Olympic**: 1500m Swimming, 40km Cycling, 10km Running
-- **Half Distance**: 1900m Swimming, 90km Cycling, 21.1km Running
-- **Full Distance**: 3800m Swimming, 180km Cycling, 42.2km Running
+- **Sprint Triathlon** (750m Schwimmen, 20km Rad, 5km Lauf)
+- **Olympic Triathlon** (1.5km Schwimmen, 40km Rad, 10km Lauf)
+- **Mitteldistanz** (1.9km Schwimmen, 90km Rad, 21.1km Lauf)
+- **Langdistanz** (3.8km Schwimmen, 180km Rad, 42.2km Lauf)
+- **Duathlon** (10km Lauf, 40km Rad, 5km Lauf)
 
-Custom distances can also be entered manually.
+### Erweiterte Funktionen
 
-## Technical Details
+- **Wechselzeiten (T1/T2)** für Triathlons
+- **Verlauf** - Speichern und Laden von Berechnungen
+- **Einstellungen** - Anpassbare Start-Zeiten, Themen, etc.
+- **Zusammenfassung** - Gesamtzeit, Durchschnittsgeschwindigkeit, Zielzeit
+- **Split-Zeiten** - Kumulative Zeiten für jede Aktivität
+- **Responsive Design** - Optimiert für Desktop und Mobile
+- **Tab-Navigation** zwischen Rechner, Verlauf und Einstellungen
+- **WordPress Plugin** - Einfache Integration in WordPress Websites
 
-### Frontend
+## 🛠️ Tech Stack
 
-- **Nuxt 3**: Vue.js framework for modern web applications
-- **TypeScript**: Type-safe development
-- **Tailwind CSS**: Utility-first CSS framework
-- **Vue3 Timepicker**: User-friendly time selection
+- **Nuxt 3** - Vue.js Framework
+- **Vue 3** mit Composition API
+- **TypeScript** - Type Safety
+- **Tailwind CSS** - Utility-First CSS
+- **Vite** - Build Tool
+- **localStorage** - Persistente Datenspeicherung
 
-### Deployment
-
-- **SPA Mode**: Optimized for WordPress integration
-- **Static Generation**: For optimal performance
-- **WordPress Plugin**: Ready-to-use PHP plugin
-
-## Installation & Development
+## 🚀 Installation & Start
 
 ### Prerequisites
 
@@ -54,15 +56,19 @@ Custom distances can also be entered manually.
 
 ### Setup
 
-```bash
-# Install dependencies
-npm install
+Dependencies installieren:
 
-# Start development server
+```bash
+npm install
+```
+
+Development Server starten:
+
+```bash
 npm run dev
 ```
 
-Development server runs on `http://localhost:3000`
+Die Anwendung ist dann unter `http://localhost:3000` verfügbar.
 
 ### Production Build
 
@@ -94,50 +100,87 @@ The project includes a ready-to-use WordPress plugin in the `wp-plugin/` folder.
 [pace-rechner]
 ```
 
-## Project Structure
+## 📱 Usage
+
+### Rechner Tab
+
+1. **Template wählen** (optional) - Wähle ein vordefiniertes Wettkampfformat
+2. **Sportarten hinzufügen** - Klicke auf die Sport-Buttons zum Hinzufügen
+3. **Werte eingeben** - Distanz, Zeit oder Pace/Geschwindigkeit
+4. **Automatische Berechnung** - Die anderen Werte werden automatisch berechnet
+5. **Berechnung speichern** - Klicke auf "Berechnung speichern" in der Zusammenfassung
+
+### Verlauf Tab
+
+- **Gespeicherte Berechnungen** anzeigen
+- **Berechnungen laden** - Klicke auf "Laden" um eine Berechnung zu öffnen
+- **Berechnungen löschen** - Einzeln oder alle auf einmal
+
+### Einstellungen Tab
+
+- **Standard-Wettkampfformat** festlegen
+- **Theme** wählen (Hell/Dunkel/Automatisch)
+- **Standard-Startzeit** einstellen
+- **Einheiten** konfigurieren (aktuell nur metrisch)
+
+## 🏃‍♂️ Beispiel-Nutzung
+
+### Sprint Triathlon
+
+1. Wähle "Sprint Triathlon" Template
+2. Die Distanzen werden automatisch gesetzt:
+   - Schwimmen: 750m
+   - Radfahren: 20km
+   - Laufen: 5km
+3. Gib deine Ziel-Zeiten oder Pace-Werte ein
+4. Sieh deine Gesamtzeit und Splits in der Zusammenfassung
+
+### Individuelles Training
+
+1. Klicke auf "+ Laufen" um eine Lauf-Aktivität hinzuzufügen
+2. Gib Distanz (z.B. 10000m) und Ziel-Pace (z.B. 4:30 min/km) ein
+3. Die benötigte Zeit wird automatisch berechnet
+4. Speichere die Berechnung für später
+
+## 📂 Projektstruktur
 
 ```
-├── components/           # Vue.js components
-│   ├── DurationPicker.vue
-│   ├── PaceRechner.vue
-│   ├── PaceRechnerForm.vue
-│   ├── PaceRechnerSummary.vue
-│   └── PaceRechnerTransition.vue
-├── composables/          # Vue composables
-│   └── usePaceCalculations.ts
-├── types/               # TypeScript definitions
-│   └── PaceRechner.ts
-├── utils/               # Utility functions
-│   └── calculations.ts
-├── wp-plugin/           # WordPress plugin
-│   ├── tri-pace-rechner-plugin.php
-│   └── dist/           # Generated files
-└── assets/css/          # Styles
+├── components/
+│   ├── DynamicPaceRechner.vue    # Haupt-Rechner mit Multi-Sport Support
+│   ├── MultiSportSummary.vue     # Erweiterte Zusammenfassung
+│   ├── HistoryView.vue           # Verlauf der Berechnungen
+│   ├── SettingsView.vue          # App-Einstellungen
+│   ├── MainNavigation.vue        # Tab-Navigation
+│   └── ...                       # Weitere Komponenten
+├── composables/
+│   ├── useMultiSportCalculations.ts  # Multi-Sport Berechnungslogik
+│   ├── useHistory.ts                 # History Management
+│   └── useGlobalState.ts             # Globaler State Manager
+├── types/
+│   └── PaceRechner.ts            # TypeScript Definitionen
+├── utils/
+│   └── calculations.ts           # Berechnungsfunktionen
+├── wp-plugin/                    # WordPress Plugin
+└── assets/css/
+    └── main.css                  # Globale Styles
 ```
 
-## How to Use
+## 🚧 Geplante Features
 
-1. **Enter start time**: When do you want to start?
-2. **Choose preset**: Or select a triathlon distance
-3. **Plan disciplines**:
-   - Enter either distance + time → pace is calculated
-   - Or enter distance + desired pace → time is calculated
-4. **Transition times**: T1 and T2 times for realistic planning
-5. **Finish time**: Automatic calculation of total and finish time
+- [ ] **Imperial Units** (Meilen, Yards, mph)
+- [ ] **Mehrsprachigkeit** (Englisch)
+- [ ] **Herzfrequenz-Zonen**
+- [ ] **Training-Pläne**
+- [ ] **Export/Import** von Berechnungen
+- [ ] **Cloud-Synchronisation**
 
-## Contributing
+## 🤝 Contributing
 
-Contributions are welcome! Please:
+Feedback und Beiträge sind willkommen! Erstelle gerne Issues oder Pull Requests.
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a pull request
+## 📄 License
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - siehe LICENSE file für Details.
 
 ## Author
 

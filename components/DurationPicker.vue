@@ -94,14 +94,6 @@ export default {
 };
 </script>
 <style lang="scss">
-.theme--dark {
-  .vue__time-picker {
-    input {
-      color: #ffffff;
-    }
-  }
-}
-
 .vue__time-picker input.display-time {
   border: none;
   width: auto;
