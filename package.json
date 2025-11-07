@@ -13,7 +13,8 @@
     "nuxt": "^3.14.0",
     "postcss": "^8.4.47",
     "sass": "^1.82.0",
-    "tailwindcss": "^3.4.15"
+    "tailwindcss": "^3.4.15",
+    "terser": "^5.44.1"
   },
   "dependencies": {
     "vue3-timepicker": "^1.0.0-beta.2"

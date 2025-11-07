@@ -2,8 +2,8 @@ const fs = require("fs");
 const path = require("path");
 
 // Paths
-const distPath = path.join(__dirname, "dist", "_nuxt");
-const indexPath = path.join(__dirname, "dist", "index.html");
+const distPath = path.join(__dirname, ".output", "public", "_nuxt");
+const indexPath = path.join(__dirname, ".output", "public", "index.html");
 const pluginPath = path.join(
   __dirname,
   "wp-plugin",
@@ -31,7 +31,7 @@ function extractBodyContent(htmlFilePath) {
     console.log(
       "Detected SPA mode - using Vue app structure with configuration"
     );
-    // For SPA, we need the mount point plus the Nuxt configuration
+    // For SPA, we need the mount point plus the Nuxt configuration and data
     const nuxtConfigMatch = htmlContent.match(
       /<script>window\.__NUXT__[\s\S]*?<\/script>/
     );
@@ -47,11 +47,29 @@ function extractBodyContent(htmlFilePath) {
       );
     }
 
+    // Also extract the Nuxt data script (for hydration)
+    const nuxtDataMatch = htmlContent.match(
+      /<script[^>]*data-nuxt-data[^>]*>[\s\S]*?<\/script>/
+    );
+    let dataScript = "";
+    if (nuxtDataMatch) {
+      dataScript = nuxtDataMatch[0];
+    }
+
     bodyContent =
-      '<div id="__nuxt"></div>' + (configScript ? configScript : "");
+      '<div id="__nuxt"></div>' +
+      (dataScript ? dataScript : "") +
+      (configScript ? configScript : "");
   } else {
+    // For non-SPA mode, still need to preserve Nuxt data and config scripts
     // Remove teleports div but keep the scripts - we only want to remove empty teleports
     bodyContent = bodyContent.replace(/<div id="teleports"><\/div>/g, "");
+
+    // Make sure to fix any _nuxt paths in existing scripts
+    bodyContent = bodyContent.replace(
+      /"buildAssetsDir":"[^"]*"/g,
+      '"buildAssetsDir":"' + "' . plugin_dir_url(__FILE__) . 'dist/_nuxt/" + '"'
+    );
   }
 
   // Clean up extra whitespace but preserve the structure
