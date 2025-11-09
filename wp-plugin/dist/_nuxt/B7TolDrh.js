@@ -1,0 +1,1 @@
+import{D as n,E as t,F as o,G as r,H as s}from"./DrZpXBhE.js";function u(u,a={}){const i=function(n){var u;const a=n||t();return(null==(u=null==a?void 0:a.ssrContext)?void 0:u.head)||(null==a?void 0:a.runWithContext(()=>{if(o())return r(s)}))}(a.nuxt);if(i)return n(u,{head:i,...a})}export{u};

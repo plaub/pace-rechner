@@ -19,9 +19,7 @@
             @click="activeTab = tab.id"
             :class="[
               'flex-1 py-3 px-4 text-center font-medium transition-colors rounded-lg',
-              activeTab === tab.id
-                ? 'bg-blue-500 text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-50',
+              activeTab === tab.id ? 'bg-blue-500 text-white' : '',
             ]"
           >
             <span class="text-lg mr-2">{{ tab.icon }}</span>
