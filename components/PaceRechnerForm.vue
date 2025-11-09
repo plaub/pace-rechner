@@ -75,147 +75,114 @@
   </div>
 </template>
 
-<script lang="ts">
-import type { PropType } from "vue";
+<script setup lang="ts">
 import { toRefs, onMounted } from "vue";
 import DurationPicker from "./DurationPicker.vue";
 import { DistanceUnit, PaceType, PaceUnit } from "@/types/PaceRechner";
 
-export default {
-  name: "PaceRechnerForm",
+interface Props {
+  title?: string;
+  backgroundColor?: string;
+  color?: string;
+  paceUnit?: PaceUnit;
+  distance?: number;
+  time?: number;
+  pace?: number;
+  speed?: number;
+  paceType?: PaceType;
+  distanceUnit?: DistanceUnit;
+}
 
-  components: {
-    DurationPicker,
-  },
+const props = withDefaults(defineProps<Props>(), {
+  title: "Run",
+  backgroundColor: "#ffffff",
+  color: "#ffffff",
+  paceUnit: PaceUnit.Run,
+  distance: 1,
+  time: 1,
+  pace: 1,
+  speed: 1,
+  paceType: PaceType.Pace,
+  distanceUnit: DistanceUnit.Run,
+});
 
-  props: {
-    title: {
-      type: String,
-      default: "Run",
-    },
-    backgroundColor: {
-      type: String,
-      default: "#ffffff",
-    },
-    color: {
-      type: String,
-      default: "#ffffff",
-    },
-    paceUnit: {
-      type: String as PropType<PaceUnit>,
-      default: PaceUnit.Run,
-    },
-    distance: {
-      type: Number,
-      default: 1,
-    },
-    time: {
-      type: Number,
-      default: 1,
-    },
-    pace: {
-      type: Number,
-      default: 1,
-    },
-    speed: {
-      type: Number,
-      default: 1,
-    },
-    paceType: {
-      type: String as PropType<PaceType>,
-      default: PaceType.Pace,
-    },
-    distanceUnit: {
-      type: String as PropType<DistanceUnit>,
-      default: DistanceUnit.Run,
-    },
-  },
+const emit = defineEmits<{
+  "update:time": [value: number];
+  "update:pace": [value: number];
+  "update:speed": [value: number];
+  "update:distance": [value: number];
+}>();
 
-  setup(props, { emit }) {
-    const { distance, time, pace, speed, paceType, paceUnit } = toRefs(props);
+const { distance, time, pace, speed, paceType, paceUnit } = toRefs(props);
 
-    onMounted(() => {
-      if (paceType.value === PaceType.Pace) {
-        onChangePace(pace.value);
-      } else {
-        // Create a mock event for initial calculation
-        const mockEvent = { target: { value: speed.value.toString() } } as any;
-        onChangeSpeed(mockEvent);
-      }
-    });
+onMounted(() => {
+  if (paceType.value === PaceType.Pace) {
+    onChangePace(pace.value);
+  } else {
+    // Create a mock event for initial calculation
+    const mockEvent = { target: { value: speed.value.toString() } } as any;
+    onChangeSpeed(mockEvent);
+  }
+});
 
-    const onChangePace = (newPace: number) => {
-      if (paceUnit.value === PaceUnit.Run) {
-        emit("update:time", Math.round((newPace * distance.value) / 1000));
-      } else {
-        emit("update:time", Math.round((newPace * distance.value) / 100));
-      }
+const onChangePace = (newPace: number) => {
+  if (paceUnit.value === PaceUnit.Run) {
+    emit("update:time", Math.round((newPace * distance.value) / 1000));
+  } else {
+    emit("update:time", Math.round((newPace * distance.value) / 100));
+  }
 
-      emit("update:pace", newPace);
-    };
+  emit("update:pace", newPace);
+};
 
-    const onChangeTime = (newTime: number) => {
-      if (paceType.value === PaceType.Pace) {
-        if (paceUnit.value === PaceUnit.Run) {
-          emit("update:pace", Math.round((newTime * 1000) / distance.value));
-        } else {
-          emit("update:pace", Math.round((newTime * 100) / distance.value));
-        }
-      } else {
-        const h = newTime / 3600;
+const onChangeTime = (newTime: number) => {
+  if (paceType.value === PaceType.Pace) {
+    if (paceUnit.value === PaceUnit.Run) {
+      emit("update:pace", Math.round((newTime * 1000) / distance.value));
+    } else {
+      emit("update:pace", Math.round((newTime * 100) / distance.value));
+    }
+  } else {
+    const h = newTime / 3600;
 
-        emit("update:speed", Math.round((distance.value / h) * 10) / 10);
-      }
+    emit("update:speed", Math.round((distance.value / h) * 10) / 10);
+  }
 
-      emit("update:time", newTime);
-    };
+  emit("update:time", newTime);
+};
 
-    const onChangeDistance = (event: Event) => {
-      const target = event.target as HTMLInputElement;
-      const distance = target.value.toString().replace(/,/g, ".");
+const onChangeDistance = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const distance = target.value.toString().replace(/,/g, ".");
 
-      const d = parseFloat(distance);
-      if (isNaN(d) || d < 10) {
-        return;
-      }
+  const d = parseFloat(distance);
+  if (isNaN(d) || d < 10) {
+    return;
+  }
 
-      if (paceType.value === PaceType.Pace) {
-        if (paceUnit.value === PaceUnit.Run) {
-          emit("update:time", Math.round((pace.value * d) / 1000));
-        } else {
-          emit("update:time", Math.round((pace.value * d) / 100));
-        }
-      } else {
-        // bike (speed)
-        emit("update:time", Math.round((d / speed.value) * 3600));
-      }
+  if (paceType.value === PaceType.Pace) {
+    if (paceUnit.value === PaceUnit.Run) {
+      emit("update:time", Math.round((pace.value * d) / 1000));
+    } else {
+      emit("update:time", Math.round((pace.value * d) / 100));
+    }
+  } else {
+    // bike (speed)
+    emit("update:time", Math.round((d / speed.value) * 3600));
+  }
 
-      emit("update:distance", d);
-    };
+  emit("update:distance", d);
+};
 
-    const onChangeSpeed = (event: Event) => {
-      const target = event.target as HTMLInputElement;
-      const p = parseFloat(target.value);
-      if (isNaN(p)) {
-        return;
-      }
+const onChangeSpeed = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const p = parseFloat(target.value);
+  if (isNaN(p)) {
+    return;
+  }
 
-      emit("update:time", Math.round((distance.value / p) * 3600));
-      emit("update:speed", p);
-    };
-
-    return {
-      time,
-      pace,
-      speed,
-      distance,
-      onChangePace,
-      onChangeTime,
-      onChangeDistance,
-      onChangeSpeed,
-      PaceType,
-    };
-  },
+  emit("update:time", Math.round((distance.value / p) * 3600));
+  emit("update:speed", p);
 };
 </script>
 

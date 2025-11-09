@@ -16,32 +16,23 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import DurationPicker from "./DurationPicker.vue";
 
-export default {
-  name: "PaceRechnerRun",
+interface Props {
+  time?: number;
+}
 
-  components: {
-    DurationPicker,
-  },
+withDefaults(defineProps<Props>(), {
+  time: 1,
+});
 
-  props: {
-    time: {
-      type: Number,
-      default: 1,
-    },
-  },
+const emit = defineEmits<{
+  "update:time": [value: number];
+}>();
 
-  setup(props, { emit }) {
-    const onChangeTime = (newTime) => {
-      emit("update:time", newTime);
-    };
-
-    return {
-      onChangeTime,
-    };
-  },
+const onChangeTime = (newTime: number) => {
+  emit("update:time", newTime);
 };
 </script>
 

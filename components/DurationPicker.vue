@@ -13,89 +13,78 @@
         uKey +
         (durationModel.ss || 1) +
         (durationModel.mm || 2) +
-        (durationModel.hh || 3)
+        (durationModel.HH || 3)
       "
       input-width="80px"
       :lazy="lazy"
     />
   </div>
 </template>
-<script>
+<script setup lang="ts">
+import { ref, watch, onMounted } from "vue";
+// @ts-ignore - vue3-timepicker has no TypeScript definitions
 import VueTimepicker from "vue3-timepicker";
 import { secondsToHHMMSS } from "~/utils/calculations";
 
-export default {
-  name: "DurationPicker",
-  components: { VueTimepicker },
+interface Props {
+  modelValue?: number | null;
+  disabled?: boolean;
+  uKey?: string;
+  lazy?: boolean;
+  backgroundColor?: string;
+}
 
-  props: {
-    modelValue: {
-      type: Number,
-      default: null,
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    uKey: {
-      type: String,
-      default: "XXX",
-    },
-    lazy: {
-      type: Boolean,
-      default: false,
-    },
-    backgroundColor: {
-      type: String,
-      default: "#3b82f6",
-    },
-  },
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: null,
+  disabled: false,
+  uKey: "XXX",
+  lazy: false,
+  backgroundColor: "#3b82f6",
+});
 
-  data() {
-    return {
-      durationModel: {},
-    };
-  },
+const emit = defineEmits<{
+  "update:modelValue": [value: number];
+}>();
 
-  computed: {},
+const durationModel = ref<{ HH?: string; mm?: string; ss?: string }>({});
 
-  watch: {
-    modelValue(newValue) {
-      const hhmmss = secondsToHHMMSS(newValue).split(":");
+const onChangeDuration = () => {
+  const s =
+    parseInt(durationModel.value.HH || "0") * 3600 +
+    parseInt(durationModel.value.mm || "0") * 60 +
+    parseInt(durationModel.value.ss || "0");
 
-      this.durationModel = {
+  emit("update:modelValue", s);
+};
+
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    if (newValue) {
+      const hhmmss = secondsToHHMMSS(newValue, false).split(":");
+
+      durationModel.value = {
         HH: hhmmss[0] || "00",
         mm: hhmmss[1] || "00",
         ss: hhmmss[2] || "00",
       };
-    },
-  },
-
-  mounted() {
-    if (this.modelValue) {
-      const hhmmss = secondsToHHMMSS(this.modelValue).split(":");
-
-      this.durationModel.HH = hhmmss[0] || "00";
-      this.durationModel.mm = hhmmss[1] || "00";
-      this.durationModel.ss = hhmmss[2] || "00";
-    } else {
-      this.durationModel.HH = "00";
-      this.durationModel.mm = "01";
-      this.durationModel.ss = "30";
     }
-  },
+  }
+);
 
-  methods: {
-    onChangeDuration(newValue) {
-      const s =
-        parseInt(this.durationModel.HH) * 3600 +
-        parseInt(this.durationModel.mm) * 60 +
-        parseInt(this.durationModel.ss);
+onMounted(() => {
+  if (props.modelValue) {
+    const hhmmss = secondsToHHMMSS(props.modelValue, false).split(":");
 
-      this.$emit("update:modelValue", s);
-    },
-  },
-};
+    durationModel.value.HH = hhmmss[0] || "00";
+    durationModel.value.mm = hhmmss[1] || "00";
+    durationModel.value.ss = hhmmss[2] || "00";
+  } else {
+    durationModel.value.HH = "00";
+    durationModel.value.mm = "01";
+    durationModel.value.ss = "30";
+  }
+});
 </script>
 <style lang="scss">
 .vue__time-picker {
