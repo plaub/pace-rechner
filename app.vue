@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pace-rechner">
     <!-- Tab Navigation -->
     <div class="max-w-6xl mx-auto px-4 mb-4">
       <nav class="bg-white rounded-lg shadow-sm">
@@ -10,7 +10,9 @@
             @click="activeTab = tab.id"
             :class="[
               'flex flex-col flex-1 py-3 px-4 text-center font-medium transition-colors rounded-lg',
-              activeTab === tab.id ? 'bg-blue-500 text-white' : '',
+              activeTab === tab.id
+                ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                : 'bg-white hover:bg-blue-300 text-gray-700',
             ]"
           >
             <span class="text-lg mr-2">{{ tab.icon }}</span>
