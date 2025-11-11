@@ -16,7 +16,7 @@
         id="presets"
         @change="handlePresetChange"
         v-model="preset"
-        class="bg-white rounded"
+        class="bg-white rounded select"
       >
         <option value="">Vorlagen</option>
         <option
@@ -946,6 +946,14 @@ const loadCalculationData = async (calculation: any) => {
       text-align: center;
       height: auto;
     }
+
+    @media screen and (max-width: 800px) {
+      margin: 18px 0;
+
+      .wrapper {
+        align-items: center;
+      }
+    }
   }
 }
 
@@ -965,6 +973,16 @@ const loadCalculationData = async (calculation: any) => {
     border: 1px solid #333;
     border-radius: 4px;
     color: #333;
+  }
+
+  @media screen and (max-width: 600px) {
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+
+    .select {
+      width: 100%;
+    }
   }
 }
 </style>

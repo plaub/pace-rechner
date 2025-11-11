@@ -1,14 +1,5 @@
 <template>
   <div>
-    <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200 mb-4">
-      <div class="max-w-6xl mx-auto px-4 py-4">
-        <h1 class="text-2xl font-bold text-center text-gray-800">
-          Pace Rechner Pro
-        </h1>
-      </div>
-    </header>
-
     <!-- Tab Navigation -->
     <div class="max-w-6xl mx-auto px-4 mb-4">
       <nav class="bg-white rounded-lg shadow-sm">
@@ -18,7 +9,7 @@
             :key="tab.id"
             @click="activeTab = tab.id"
             :class="[
-              'flex-1 py-3 px-4 text-center font-medium transition-colors rounded-lg',
+              'flex flex-col flex-1 py-3 px-4 text-center font-medium transition-colors rounded-lg',
               activeTab === tab.id ? 'bg-blue-500 text-white' : '',
             ]"
           >
@@ -46,28 +37,6 @@
         <SettingsView />
       </div>
     </div>
-
-    <!-- Mobile Bottom Navigation -->
-    <nav
-      class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg"
-    >
-      <div class="flex">
-        <button
-          v-for="tab in tabs"
-          :key="tab.id"
-          @click="activeTab = tab.id"
-          :class="[
-            'flex-1 py-3 px-2 text-center text-xs font-medium transition-colors',
-            activeTab === tab.id
-              ? 'bg-blue-500 text-white'
-              : 'bg-white text-gray-700',
-          ]"
-        >
-          <div class="text-lg mb-1">{{ tab.icon }}</div>
-          {{ tab.label }}
-        </button>
-      </div>
-    </nav>
   </div>
 </template>
 

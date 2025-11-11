@@ -473,6 +473,7 @@ const getSingleSportFinishTime = () => {
       .section-header {
         background-color: #f0f0f0 !important;
         font-weight: bold !important;
+        border-radius: 28px;
 
         td {
           text-align: center !important;
@@ -482,6 +483,8 @@ const getSingleSportFinishTime = () => {
           border-left: none !important;
           border-right: none !important;
           background-color: #f0f0f0 !important;
+          border-top-left-radius: 28px;
+          border-top-right-radius: 28px;
         }
       }
 

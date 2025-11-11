@@ -89,6 +89,12 @@ onMounted(() => {
 <style lang="scss">
 .vue__time-picker {
   position: relative;
+  display: flex;
+  margin: 0 auto;
+
+  input {
+    text-align: center;
+  }
 
   .dropdown.drop-down {
     background: white;
@@ -99,11 +105,11 @@ onMounted(() => {
     overflow: hidden;
     z-index: 1000;
     position: absolute;
-    width: 137px !important;
+    width: 140px !important;
 
     .select-list {
       display: flex;
-      width: 137px !important;
+      width: 140px !important;
 
       ul {
         flex: 1;
