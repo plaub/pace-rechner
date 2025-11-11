@@ -4,7 +4,7 @@
  * Plugin Name: Triathlon Pace Rechner
  * Plugin URI: https://www.pierrelaub.de
  * Description: Display pace rechner using shortcode [pace-rechner]
- * Version: 1.0.54
+ * Version: 1.0.56
  * Text Domain: triathlon-pace-rechner
  * Author: Pierre Laub
  * Author URI: https://www.pierrelaub.de
@@ -13,9 +13,9 @@
 //Register scripts to use
 function func_load_pace_rechner_scripts()
 {
-    $version = '1.0.54';
+    $version = '1.0.56';
     // Register in dependency order - base chunk first
-                                                                                wp_register_script('pace-rechner_script_0', plugin_dir_url(__FILE__) . 'dist/_nuxt/DrZpXBhE.js', array(), $version, true);
+                                                                                        wp_register_script('pace-rechner_script_0', plugin_dir_url(__FILE__) . 'dist/_nuxt/zVP15srr.js', array(), $version, true);
     
     // Add module type for ES6 imports
     add_filter('script_loader_tag', 'add_module_to_pace_rechner_scripts', 10, 3);
@@ -34,7 +34,7 @@ add_action('wp_enqueue_scripts', 'func_load_pace_rechner_scripts');
 //Return string for shortcode
 function func_wp_pace_rechner()
 {
-    $version = '1.0.54';
+    $version = '1.0.56';
     
     // Enqueue the single script that was generated
     
@@ -56,11 +56,13 @@ function func_wp_pace_rechner()
     
     
     
+    
+    
     wp_enqueue_script('pace-rechner_script_0');
-    wp_enqueue_style('pace-rechner', plugin_dir_url(__FILE__) . 'dist/_nuxt/entry.DJsEuUsw.css', null, $version);
+    wp_enqueue_style('pace-rechner', plugin_dir_url(__FILE__) . 'dist/_nuxt/entry.CfuZ1Y3P.css', null, $version);
 
     //Build String
-    $str = '<div id="__nuxt"></div><script type="application/json" data-nuxt-data="nuxt-app" data-ssr="false" id="__NUXT_DATA__">[{"prerenderedAt":1,"serverRendered":2},1762525128738,false]</script><script>window.__NUXT__={};window.__NUXT__.config={public:{},app:{baseURL:"/",buildId:"331183eb-1fa5-46f6-98c3-aa82af8d3ed7",buildAssetsDir:"' . plugin_dir_url(__FILE__) . 'dist/_nuxt/",cdnURL:""}}</script>';
+    $str = '<div id="__nuxt"></div><script type="application/json" data-nuxt-data="nuxt-app" data-ssr="false" id="__NUXT_DATA__">[{"prerenderedAt":1,"serverRendered":2},1762887448539,false]</script><script>window.__NUXT__={};window.__NUXT__.config={public:{},app:{baseURL:"/",buildId:"6e979d1d-183f-4e4f-88b0-c3cefb186388",buildAssetsDir:"' . plugin_dir_url(__FILE__) . 'dist/_nuxt/",cdnURL:""}}</script>';
 
     //Return to display
     return $str;
