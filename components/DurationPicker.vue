@@ -1,29 +1,83 @@
 <template>
-  <div :style="{ '--dropdown-active-color': backgroundColor }">
-    <vue-timepicker
-      v-model="durationModel"
-      @change="onChangeDuration"
-      format="HH:mm:ss"
-      manual-input
-      hide-clear-button
-      append-to-body
-      auto-scroll
-      :disabled="disabled"
-      :key="
-        uKey +
-        (durationModel.ss || 1) +
-        (durationModel.mm || 2) +
-        (durationModel.HH || 3)
-      "
-      input-width="80px"
-      :lazy="lazy"
-    />
+  <div class="custom-time-picker" :class="{ disabled: disabled }">
+    <div
+      class="time-inputs"
+      @click="toggleDropdown"
+      :class="{ open: isDropdownOpen }"
+    >
+      <div class="time-display">
+        <span class="time-value">{{ formattedTime }}</span>
+        <svg
+          class="dropdown-icon"
+          :class="{ rotate: isDropdownOpen }"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
+    </div>
+
+    <div v-if="isDropdownOpen" class="dropdown-overlay" @click="closeDropdown">
+      <div class="dropdown-content" @click.stop>
+        <div class="dropdown-header">Zeit eingeben</div>
+        <div class="time-selectors">
+          <div class="time-column">
+            <div class="column-header">Std</div>
+            <div class="options-list hours-list">
+              <button
+                v-for="h in hourOptions"
+                :key="h"
+                @click="selectHour(h)"
+                :class="{ selected: hours === padZero(h) }"
+                class="option-button"
+              >
+                {{ padZero(h) }}
+              </button>
+            </div>
+          </div>
+          <div class="time-column">
+            <div class="column-header">Min</div>
+            <div class="options-list minutes-list">
+              <button
+                v-for="m in minuteOptions"
+                :key="m"
+                @click="selectMinute(m)"
+                :class="{ selected: minutes === padZero(m) }"
+                class="option-button"
+              >
+                {{ padZero(m) }}
+              </button>
+            </div>
+          </div>
+          <div class="time-column">
+            <div class="column-header">Sek</div>
+            <div class="options-list seconds-list">
+              <button
+                v-for="s in secondOptions"
+                :key="s"
+                @click="selectSecond(s)"
+                :class="{ selected: seconds === padZero(s) }"
+                class="option-button"
+              >
+                {{ padZero(s) }}
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="dropdown-footer">
+          <button @click="closeDropdown" class="done-button">Fertig</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
-// @ts-ignore - vue3-timepicker has no TypeScript definitions
-import VueTimepicker from "vue3-timepicker";
+import { ref, watch, onMounted, computed } from "vue";
 import { secondsToHHMMSS } from "~/utils/calculations";
 
 interface Props {
@@ -46,28 +100,113 @@ const emit = defineEmits<{
   "update:modelValue": [value: number];
 }>();
 
-const durationModel = ref<{ HH?: string; mm?: string; ss?: string }>({});
+const hours = ref<string>("00");
+const minutes = ref<string>("01");
+const seconds = ref<string>("30");
+const isDropdownOpen = ref<boolean>(false);
 
-const onChangeDuration = () => {
-  const s =
-    parseInt(durationModel.value.HH || "0") * 3600 +
-    parseInt(durationModel.value.mm || "0") * 60 +
-    parseInt(durationModel.value.ss || "0");
+// Generate options for dropdowns
+const hourOptions = computed(() => Array.from({ length: 24 }, (_, i) => i));
+const minuteOptions = computed(() => Array.from({ length: 60 }, (_, i) => i));
+const secondOptions = computed(() => Array.from({ length: 60 }, (_, i) => i));
 
-  emit("update:modelValue", s);
+// Computed formatted time display
+const formattedTime = computed(
+  () => `${hours.value}:${minutes.value}:${seconds.value}`
+);
+
+const padZero = (value: string | number): string => {
+  const num = typeof value === "string" ? parseInt(value) : value;
+  return isNaN(num) ? "00" : num.toString().padStart(2, "0");
+};
+
+const emitValue = () => {
+  const totalSeconds =
+    parseInt(hours.value || "0") * 3600 +
+    parseInt(minutes.value || "0") * 60 +
+    parseInt(seconds.value || "0");
+
+  console.log(
+    "Emitting value:",
+    totalSeconds,
+    `${hours.value}:${minutes.value}:${seconds.value}`
+  );
+  emit("update:modelValue", totalSeconds);
+};
+
+// Dropdown functions
+const toggleDropdown = () => {
+  if (!props.disabled) {
+    isDropdownOpen.value = !isDropdownOpen.value;
+    if (isDropdownOpen.value) {
+      scrollToSelected();
+    }
+  }
+};
+
+const closeDropdown = () => {
+  isDropdownOpen.value = false;
+};
+
+const selectHour = (h: number) => {
+  hours.value = padZero(h);
+  emitValue();
+};
+
+const selectMinute = (m: number) => {
+  minutes.value = padZero(m);
+  emitValue();
+};
+
+const selectSecond = (s: number) => {
+  seconds.value = padZero(s);
+  emitValue();
+};
+
+// Auto-scroll to center selected values
+const scrollToSelected = () => {
+  setTimeout(() => {
+    // Scroll selected hour into view
+    const selectedHour = document.querySelector(".hours-list .selected");
+    if (selectedHour) {
+      selectedHour.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+
+    // Scroll selected minute into view
+    const selectedMinute = document.querySelector(".minutes-list .selected");
+    if (selectedMinute) {
+      selectedMinute.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+
+    // Scroll selected second into view
+    const selectedSecond = document.querySelector(".seconds-list .selected");
+    if (selectedSecond) {
+      selectedSecond.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, 50);
 };
 
 watch(
   () => props.modelValue,
   (newValue) => {
-    if (newValue) {
+    if (newValue !== null && newValue !== undefined && newValue > 0) {
       const hhmmss = secondsToHHMMSS(newValue, false).split(":");
+      hours.value = hhmmss[0] || "00";
+      minutes.value = hhmmss[1] || "00";
+      seconds.value = hhmmss[2] || "00";
 
-      durationModel.value = {
-        HH: hhmmss[0] || "00",
-        mm: hhmmss[1] || "00",
-        ss: hhmmss[2] || "00",
-      };
+      if (isDropdownOpen.value) {
+        scrollToSelected();
+      }
     }
   }
 );
@@ -75,112 +214,191 @@ watch(
 onMounted(() => {
   if (props.modelValue) {
     const hhmmss = secondsToHHMMSS(props.modelValue, false).split(":");
-
-    durationModel.value.HH = hhmmss[0] || "00";
-    durationModel.value.mm = hhmmss[1] || "00";
-    durationModel.value.ss = hhmmss[2] || "00";
+    hours.value = hhmmss[0] || "00";
+    minutes.value = hhmmss[1] || "00";
+    seconds.value = hhmmss[2] || "00";
   } else {
-    durationModel.value.HH = "00";
-    durationModel.value.mm = "01";
-    durationModel.value.ss = "30";
+    // Emit initial default value (01:30 = 90 seconds)
+    emitValue();
   }
 });
 </script>
-<style lang="scss">
-.vue__time-picker {
+<style lang="scss" scoped>
+.custom-time-picker {
   position: relative;
-  display: flex;
-  margin: 0 auto;
+  display: inline-block;
 
-  input {
-    text-align: center;
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+.time-inputs {
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+
+  &:hover {
+    border-color: #9ca3af;
   }
 
-  .dropdown.drop-down {
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-    z-index: 1000;
-    position: absolute;
-    width: 140px !important;
+  &.open {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+}
 
-    .select-list {
-      display: flex;
-      width: 140px !important;
+.time-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
 
-      ul {
-        flex: 1;
-        margin: 0;
-        padding: 0;
-        list-style: none;
-        border-right: 1px solid #e2e8f0;
-        max-height: 200px;
-        overflow-y: auto;
+.time-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  font-family: monospace;
+}
 
-        &:last-child {
-          border-right: none;
-        }
+.dropdown-icon {
+  width: 16px;
+  height: 16px;
+  color: #6b7280;
+  transition: transform 0.2s ease;
 
-        li {
-          padding: 8px 12px;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          font-size: 14px;
-          text-align: center;
-          color: #334155;
+  &.rotate {
+    transform: rotate(180deg);
+  }
+}
 
-          &.hint {
-            background-color: #f8fafc;
-            color: #64748b;
-            font-weight: 600;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            cursor: default;
-            border-bottom: 1px solid #e2e8f0;
-            position: sticky;
-            top: 0;
-            z-index: 1;
-          }
+.dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-          &:not(.hint):hover {
-            background-color: #f1f5f9;
-          }
+.dropdown-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  padding: 20px;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow: hidden;
+}
 
-          &.active {
-            background-color: var(--dropdown-active-color, #3b82f6);
-            color: white;
-            font-weight: 600;
+.dropdown-header {
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  color: #374151;
+  margin-bottom: 16px;
+}
 
-            &:hover {
-              background-color: var(--dropdown-active-color, #3b82f6);
-              filter: brightness(0.9);
-            }
-          }
-        }
+.time-selectors {
+  display: flex;
+  gap: 12px;
+}
 
-        // Scrollbar styling für jede ul
-        &::-webkit-scrollbar {
-          width: 6px;
-        }
+.time-column {
+  flex: 1;
+  min-width: 80px;
+}
 
-        &::-webkit-scrollbar-track {
-          background: #f1f5f9;
-        }
+.column-header {
+  text-align: center;
+  font-weight: 600;
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+  padding: 4px;
+  background: #f9fafb;
+  border-radius: 4px;
+}
 
-        &::-webkit-scrollbar-thumb {
-          background: #cbd5e1;
-          border-radius: 3px;
+.options-list {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
 
-          &:hover {
-            background: #94a3b8;
-          }
-        }
-      }
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+
+    &:hover {
+      background: #94a3b8;
     }
+  }
+}
+
+.option-button {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 14px;
+  color: #374151;
+
+  &:hover {
+    background: #f3f4f6;
+  }
+
+  &.selected {
+    background: #3b82f6;
+    color: white;
+    font-weight: 600;
+  }
+}
+
+.dropdown-footer {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.done-button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #2563eb;
   }
 }
 </style>

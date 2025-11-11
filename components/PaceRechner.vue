@@ -916,35 +916,6 @@ const loadCalculationData = async (calculation: any) => {
           padding-right: 5px;
         }
       }
-
-      input {
-        color: #333333;
-        background-color: #ffffff;
-        border: 1px solid #cccccc;
-        border-radius: 4px;
-        padding: 8px;
-        font-size: 16px;
-
-        &:focus {
-          outline: none;
-          border-color: #007acc;
-          box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.2);
-        }
-      }
-    }
-
-    ::v-deep(.row .picker input) {
-      width: 80px;
-    }
-
-    ::v-deep(.row .picker input),
-    ::v-deep(.vue__time-picker .vue__time-picker-input) {
-      border: none;
-      font-size: 14px;
-      padding: 8px;
-      height: auto;
-      text-align: center;
-      height: auto;
     }
 
     @media screen and (max-width: 800px) {

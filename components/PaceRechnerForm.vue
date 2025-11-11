@@ -193,5 +193,59 @@ const onChangeSpeed = (event: Event) => {
     flex-flow: row;
     align-items: center;
   }
+
+  .picker input[type="number"] {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 8px 12px;
+    transition: all 0.2s ease;
+    width: 103.58px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    font-family: monospace;
+
+    &:hover {
+      border-color: #9ca3af;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      pointer-events: none;
+      background: #f9fafb;
+      color: #6b7280;
+    }
+
+    // Remove default number input arrows
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &[type="number"] {
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+  }
+}
+
+// Mobile optimizations
+@media (max-width: 768px) {
+  .wrapper {
+    input[type="number"] {
+      padding: 12px 16px;
+      font-size: 16px;
+    }
+  }
 }
 </style>
